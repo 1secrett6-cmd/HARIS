@@ -14,6 +14,17 @@ Sense -> Reason -> Guard -> Act -> Verify -> Learn
 
 HARIS is autonomous within defined policy authority. Capabilities that require unsupported controls, human consent, or operator resources remain explicitly bounded or unavailable rather than being presented as completed live operations.
 
+![HARIS console — autonomous storm cycle with the local AI advisor](docs/screenshots/console_storm.png)
+
+<details>
+<summary>More screenshots</summary>
+
+| Decision trace (local AI ranked the plan) | Tamper-evident audit chain |
+|---|---|
+| ![trace](docs/screenshots/trace_storm.png) | ![audit](docs/screenshots/history_audit.png) |
+
+</details>
+
 ## Evidence classification
 
 All implementation and demonstration claims use the following labels:
@@ -50,7 +61,7 @@ LangGraph deterministic supervisor
 | Frontend | Streamlit supervisory operations dashboard |
 | Backend | FastAPI authoritative runtime and API boundary |
 | Agent orchestration | LangGraph supervisor with deterministic workflow transitions |
-| Advisory reasoning | CrewAI role-scoped specialists using configured Gemini or Groq providers |
+| Advisory reasoning | CrewAI role-scoped specialists using configured Gemini or Groq providers; the planner's chain ends on a local Ollama model, then deterministic policy |
 | Telecom integration | Nokia Network as Code and CAMARA-compatible capabilities |
 | Persistence | Supabase PostgreSQL durable event, incident, action, recovery, and audit state |
 | Memory | Existing bounded operational memory and retrieval components; durable records remain backend-owned |
@@ -70,6 +81,16 @@ HARIS defines five bounded operational roles:
 | **Warden** | Owns deterministic network-safety policy and privileged-dispatch trust decisions. |
 
 LangGraph supervises state and deterministic workflow transitions. CrewAI provides bounded, role-scoped advisory reasoning; its output cannot invent assets or measurements, bypass WARDEN, or directly execute Nokia actions.
+
+## Local AI advisor (no internet required)
+
+A sandstorm can take the backhaul down with it, so the planner's advisory chain ends on this machine: Gemini -> Groq -> a local [Ollama](https://ollama.com) model -> deterministic policy. Set `LOCAL_LLM_BASE_URL` (the launcher does this automatically when Ollama is running); the default model is `qwen2.5:1.5b`.
+
+- It is the only advisor the isolated fixture demo may consult; external AI/HTTP access stays disabled.
+- Loopback URLs only, so enabling it opens no outbound path.
+- It is bounded exactly like the hosted models: it may only rank the candidate IDs TRIAGE supplies, it moves confidence by at most +/-0.05, and any invalid output falls back to deterministic policy. WARDEN still decides.
+
+Measured on a laptop CPU: about 0.6 s per ranking once the model is loaded (the launcher pre-loads it). The decision trace shows `AI_PLANNER_USED=true MODEL=qwen2.5:1.5b (local)`.
 
 ## Closed-loop operations and playbooks
 
@@ -243,8 +264,8 @@ The real validation exercises database-level correctness through unique and idem
 Latest complete offline-safe result:
 
 ```text
-OFFLINE_TEST_TOTAL=625
-PASSED=625
+OFFLINE_TEST_TOTAL=687
+PASSED=687
 FAILED=0
 ERRORS=0
 OFFLINE_SAFE
@@ -285,6 +306,14 @@ Run it with:
 No credentials, private endpoints, or environment data are embedded in these references.
 
 ## Local setup
+
+### One click (Windows)
+
+Double-click **`START-HARIS.bat`**. The first run creates `.venv`, installs the requirements and copies `.env.example` to `.env` (fixture mode, no credentials). The console then opens at <http://localhost:8501>; `STOP-HARIS.bat` stops it. If Ollama is running with `qwen2.5:1.5b` pulled, the launcher switches on the local AI advisor and pre-loads the model (set `HARIS_LOCAL_MODEL` to use another one).
+
+Console screenshots for the README and the deck: `python scripts/capture_screens.py` (Playwright with the local Chrome).
+
+### Manual
 
 ```powershell
 python -m venv .venv

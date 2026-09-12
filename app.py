@@ -2659,13 +2659,18 @@ def render_console() -> None:
         render_controls()
         fixture_demo = st.session_state.get("fixture_demo_cycle")
         if fixture_demo:
+            local_ai = (
+                f"Local AI advisory: {html.escape(settings.local_llm_model)} on this machine (no internet)<br>"
+                if settings.local_llm_base_url else ""
+            )
             render_html(
-                """
+                f"""
                 <div class="notification-panel">
                   <b>SIMULATED / FIXTURE HARIS DEMONSTRATION</b><br>
                   Authority: PROCESS-LOCAL FIXTURE DEMO<br>
                   Provider access: DISABLED<br>
                   External AI/HTTP access: DISABLED<br>
+                  {local_ai}
                   Durable operational incident: NOT CREATED<br>
                   Durable history write: DISABLED
                 </div>

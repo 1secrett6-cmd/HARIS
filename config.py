@@ -281,6 +281,13 @@ class AppSettings(BaseSettings):
     # deterministic LangGraph control loop open indefinitely.
     ai_provider_timeout_seconds: int = Field(default=8, ge=1, le=30)
     crewai_timeout_seconds: int = Field(default=25, ge=1, le=55)
+    # Optional model served on this machine (Ollama). It is the last advisory
+    # provider and the only one that keeps working when a storm takes the
+    # backhaul down. Loopback hosts only; unset means disabled.
+    local_llm_base_url: Optional[str] = None
+    local_llm_model: str = "qwen2.5:1.5b"
+    # Generous because the first call also loads the model into memory.
+    local_llm_timeout_seconds: int = Field(default=90, ge=1, le=300)
 
     # Durable audit persistence is backend-only. Configure these exclusively on
     # Render/FastAPI; Streamlit consumes the sanitized backend history API and
@@ -340,6 +347,10 @@ class AppSettings(BaseSettings):
         return bool(self.gemini_api_key or self.groq_api_key)
 
     @property
+    def has_local_llm(self) -> bool:
+        return bool(self.local_llm_base_url)
+
+    @property
     def has_supabase(self) -> bool:
         return bool(self.supabase_url and self.supabase_key)
 
@@ -362,7 +373,7 @@ def get_settings() -> AppSettings:
             nac_mode="fixture", nokia_observation_enabled=False,
             enable_continuous_loop=False, enable_live_write_loop=False,
             nac_api_token=None, gemini_api_key=None, groq_api_key=None,
-            supabase_url=None, supabase_key=None, mem0_api_key=None,
+            local_llm_base_url=None, supabase_url=None, supabase_key=None, mem0_api_key=None,
             haris_history_persistence_enabled=False, public_dust_feed_url=None,
             haris_backend_url=None, haris_operational_api_token=None,
             haris_backend_api_token=None, nokia_event_webhook_secret=None,
