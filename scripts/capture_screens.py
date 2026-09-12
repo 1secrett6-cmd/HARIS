@@ -34,6 +34,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Capture HARIS console screenshots.")
     ap.add_argument("--out", default=str(ROOT / "docs" / "screenshots"))
     ap.add_argument("--url", default="http://localhost:8501")
+    ap.add_argument("--height", type=int, default=1850, help="viewport height in CSS pixels")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -43,7 +44,9 @@ def main() -> int:
             channel="chrome", headless=True,
             args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"],
         )
-        ctx = browser.new_context(viewport={"width": 1600, "height": 1000}, device_scale_factor=1.25)
+        # Streamlit scrolls inside its own container, so the viewport height
+        # decides how much of the page a screenshot can show.
+        ctx = browser.new_context(viewport={"width": 1600, "height": args.height}, device_scale_factor=1.25)
         page = ctx.new_page()
         page.goto(args.url, wait_until="load", timeout=120_000)
         page.get_by_text("OVERVIEW", exact=True).first.wait_for(timeout=120_000)
