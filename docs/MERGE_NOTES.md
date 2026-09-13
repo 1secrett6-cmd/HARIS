@@ -1,6 +1,6 @@
 # Merge notes — `merge/combined`
 
-This branch is Tamer's HARIS (`main` at `dbb62a8`) plus the parts of the team's
+This branch is Tamer's HARIS (`main` at `dbb62a8`, then merged with his `5432c9e`) plus the parts of the team's
 parallel prototype that it did not already have. Nothing in the durable core,
 the dispatch security flow or the Nokia clients was changed.
 
@@ -17,7 +17,7 @@ the dispatch security flow or the Nokia clients was changed.
 | Submission texts | `docs/SUBMISSION.md` | Demo description, API synopsis, commercial value, business impact, honest scope and the 3-minute video script, written against this code. |
 | README | local AI section, one-click setup, test count | |
 
-Offline suite on this branch: **690 passed, 0 failed, OFFLINE_SAFE** (679 before + 11 new).
+Offline suite on this branch: **693 passed, 0 failed, OFFLINE_SAFE** (682 on Tamer's latest `main` + 11 new).
 
 ## Before submitting — deployed app
 

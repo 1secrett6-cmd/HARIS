@@ -266,8 +266,8 @@ The real validation exercises database-level correctness through unique and idem
 Latest complete offline-safe result:
 
 ```text
-OFFLINE_TEST_TOTAL=690
-PASSED=690
+OFFLINE_TEST_TOTAL=693
+PASSED=693
 FAILED=0
 ERRORS=0
 OFFLINE_SAFE
