@@ -317,16 +317,31 @@ Console screenshots for the README and the deck: `python scripts/capture_screens
 
 ### Manual
 
+The local demo needs only the Streamlit console: it runs the whole fixture cycle in-process.
+
+Windows (PowerShell):
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 Copy-Item .env.example .env
-python run_api.py
 streamlit run app.py
 ```
 
-Use `NAC_MODE=fixture` for deterministic local demonstrations. Configure `HARIS_BACKEND_URL` in Streamlit so the deployed console uses the authoritative FastAPI backend. Nokia, Supabase, OAuth, and reasoning-provider secrets belong only in backend hosting configuration.
+macOS / Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+streamlit run app.py
+```
+
+The console opens at <http://localhost:8501>. Keep `NAC_MODE=fixture` and leave `HARIS_BACKEND_URL` empty in `.env` for the local demo. For the local AI advisor, run Ollama and set `LOCAL_LLM_BASE_URL=http://127.0.0.1:11434`.
+
+**Optional: the FastAPI backend.** `python run_api.py` starts the API server on port 8000 (health: `/api/platform/health`). It keeps its terminal busy, so run it in a second terminal, never before `streamlit run` in the same one. The deployed console reaches it through `HARIS_BACKEND_URL` plus matching Bearer tokens (`HARIS_OPERATIONAL_API_TOKEN` on the backend, `HARIS_BACKEND_API_TOKEN` on Streamlit). Nokia, Supabase, OAuth, and reasoning-provider secrets belong only in backend hosting configuration.
 
 ## Demonstration paths
 
