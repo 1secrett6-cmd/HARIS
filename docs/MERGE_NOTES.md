@@ -11,12 +11,13 @@ the dispatch security flow or the Nokia clients was changed.
 | Local AI advisor (Ollama) as the last tier of the planner's advisory chain | `agents.py` (`LocalChatModel`, `ReasoningRouter`), `config.py` (`LOCAL_LLM_*`), `.env.example` | A storm can take the backhaul down; the advisor keeps working on the laptop. Loopback URLs only, bounded exactly like Gemini/Groq, and the only advisor the isolated fixture demo may consult. |
 | Console line for the local advisor | `app.py` (fixture demo panel) | Judges see which model answered and that no internet was used. |
 | Tests | `test_local_llm.py` (8 tests) | Loopback-only URLs, chain order, hosted-first, local-only in the isolated demo, hallucinated IDs rejected, TEST runtime never builds it. |
+| Storm map | `app.py` (`render_storm_map`), `test_storm_map.py` (3 tests) | Before/after geographic map in Autonomous Operations and Network Intelligence: towers coloured by the cycle's congestion evidence, the storm-impact circle, tier-1 devices and a green ring on protected ones. Site positions are labelled SIMULATED demo geography. |
 | One-click launcher | `START-HARIS.bat`, `STOP-HARIS.bat`, `.gitattributes`, `assets/haris.ico` | Creates `.venv`, installs requirements, copies `.env.example`, detects Ollama, pre-loads the model, opens the console. |
 | Screenshot capture | `scripts/capture_screens.py` | Regenerates the images used in the README and the deck. |
 | Submission texts | `docs/SUBMISSION.md` | Demo description, API synopsis, commercial value, business impact, honest scope and the 3-minute video script, written against this code. |
 | README | local AI section, one-click setup, test count | |
 
-Offline suite on this branch: **687 passed, 0 failed, OFFLINE_SAFE** (679 before + 8 new).
+Offline suite on this branch: **690 passed, 0 failed, OFFLINE_SAFE** (679 before + 11 new).
 
 ## Before submitting — deployed app
 

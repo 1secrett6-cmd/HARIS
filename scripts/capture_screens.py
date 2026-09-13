@@ -64,6 +64,20 @@ def main() -> int:
             trace.screenshot(path=str(out / "trace_storm.png"))
         print("captured console_storm.png, trace_storm.png")
 
+        deck = page.locator('[data-testid="stDeckGlJsonChart"]').first
+        deck.wait_for(timeout=60_000)
+        deck.evaluate("e => e.scrollIntoView({block: 'center'})")
+        page.wait_for_timeout(8_000)  # basemap tiles and deck.gl layers
+        top = page.get_by_text("STORM MAP", exact=False).first.bounding_box()
+        decks = page.locator('[data-testid="stDeckGlJsonChart"]')
+        bottom = decks.nth(decks.count() - 1).bounding_box()
+        page.screenshot(path=str(out / "storm_map.png"), clip={
+            "x": 0, "y": top["y"] - 16, "width": page.viewport_size["width"],
+            "height": bottom["y"] + bottom["height"] - top["y"] + 32,
+        })
+        print("captured storm_map.png")
+        open_tab(page, "AUTONOMOUS OPERATIONS")
+
         press(page, "RUN FIELD INTERVENTION DEMO")
         page.wait_for_timeout(8_000)
         open_tab(page, "TRUSTED DISPATCH")

@@ -14,6 +14,8 @@ Sense -> Reason -> Guard -> Act -> Verify -> Learn
 
 HARIS is autonomous within defined policy authority. Capabilities that require unsupported controls, human consent, or operator resources remain explicitly bounded or unavailable rather than being presented as completed live operations.
 
+![HARIS storm map — towers before and after HARIS acts](docs/screenshots/storm_map.png)
+
 ![HARIS console — autonomous storm cycle with the local AI advisor](docs/screenshots/console_storm.png)
 
 <details>
@@ -264,8 +266,8 @@ The real validation exercises database-level correctness through unique and idem
 Latest complete offline-safe result:
 
 ```text
-OFFLINE_TEST_TOTAL=687
-PASSED=687
+OFFLINE_TEST_TOTAL=690
+PASSED=690
 FAILED=0
 ERRORS=0
 OFFLINE_SAFE

@@ -34,7 +34,7 @@ as Code. The video shows:
    touches the network. The AI can only rank what policy already allowed.
 4. **The agent acts and verifies.** ACTUATOR opens guaranteed Quality on Demand
    sessions, attaches the protected slice and sets geofences. VERIFY reads the
-   network back: T03 falls from High to Low, 8 of 8 devices reachable,
+   network back: T03 falls from High to Low — on the storm map the tower turns from red to green — 8 of 8 devices reachable,
    incident MITIGATED. If verification fails, HARIS rolls back only the
    resources it owns.
 5. **The trust layer refuses.** A tower power fault needs a technician on
@@ -139,7 +139,7 @@ Validating them on a live operator network is the first pilot milestone.*
   as success.
 - The audit trail is SHA-256 hash-chained and tamper-evident; it is not
   described as signed or immutable storage.
-- Quality: **687 offline tests pass** (`python run_offline_tests.py`) with
+- Quality: **690 offline tests pass** (`python run_offline_tests.py`) with
   zero external network or provider calls.
 
 ---
@@ -158,7 +158,7 @@ Resource & Tooling Guide).
 | 0:20–0:40 | Network Intelligence: topology, capability matrix | "HARIS watches the cells and critical assets that matter — ambulances, SCADA gateways, fleets and sensors — through seven GSMA Open Gateway capabilities on Nokia Network as Code. Every value is labelled: real, derived, simulated or unavailable." |
 | 0:40–1:05 | Autonomous Operations: press RUN AUTONOMOUS HARIS; the eight-stage decision engine lights up | "A dust advisory lands. SENTINEL sees High congestion on three cells and opens an incident. CARTOGRAPHER finds eight exposed devices. TRIAGE proposes six bounded actions for the two lives-and-safety assets." |
 | 1:05–1:25 | trace line `AI_PLANNER_USED=true MODEL=qwen2.5:1.5b (local)` | "An AI advisor ranks those actions — and this one runs on the laptop, with no internet at all. If the storm takes the backhaul, HARIS keeps thinking. The model can only rank what policy allowed." |
-| 1:25–1:50 | WARDEN approved line, ACTUATOR lines, Mitigation Impact card | "WARDEN, the deterministic safety authority, checks confidence, blast radius and cost. Then HARIS acts: guaranteed Quality on Demand, a protected slice, a geofence. And it verifies — T03 drops from High to Low, eight of eight devices reachable." |
+| 1:25–1:50 | WARDEN approved line, ACTUATOR lines, storm map before/after, Mitigation Impact card | "WARDEN, the deterministic safety authority, checks confidence, blast radius and cost. Then HARIS acts: guaranteed Quality on Demand, a protected slice, a geofence. And it verifies — on the map, tower T03 turns from red to green, and eight of eight devices are reachable." |
 | 1:50–2:25 | Trusted Dispatch (deployed app): Number Verification, SIM Swap, BLOCK, fallback engineer | "A tower needs a technician. Before anyone gets site access, WARDEN runs Nokia Number Verification and SIM Swap. This number's SIM was swapped recently — dispatch blocked. HARIS moves to the next engineer and asks for fresh consent. A hijacked number never reaches the tower." |
-| 2:25–2:50 | RUN REAL NOKIA READ CHECK result; History & Audit chain verified | "This is not a mock-up. One press reads the real Nokia platform. Every decision lands in a durable, hash-chained audit trail that survives restarts — and 687 automated tests hold it all together." |
+| 2:25–2:50 | RUN REAL NOKIA READ CHECK result; History & Audit chain verified | "This is not a mock-up. One press reads the real Nokia platform. Every decision lands in a durable, hash-chained audit trail that survives restarts — and 690 automated tests hold it all together." |
 | 2:50–3:00 | end card: HARIS · repo · app URL | "HARIS. Autonomous, bounded and honest — on any Open Gateway operator. Thank you." |
