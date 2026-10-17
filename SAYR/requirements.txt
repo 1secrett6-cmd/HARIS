@@ -1,0 +1,12 @@
+numpy
+pandas
+scikit-learn
+xgboost
+networkx
+osmnx
+geopandas
+streamlit
+plotly
+python-docx
+pytest
+# SUMO: install separately (https://eclipse.dev/sumo/), provides sumolib + traci
