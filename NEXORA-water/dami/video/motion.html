@@ -1,0 +1,231 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+/*FONT*/
+* { box-sizing:border-box; margin:0; padding:0 }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#0C0306 }
+body { font-family:'Cairo','Segoe UI',sans-serif; color:#fff }
+#stage { position:absolute; inset:0; overflow:hidden; background:radial-gradient(circle at 50% 45%,#3B0A10 0%,#14040A 55%,#07020A 100%) }
+#glow { position:absolute; left:50%; top:45%; width:1400px; height:1400px; margin:-700px; border-radius:50%; background:radial-gradient(circle,#DC262640,transparent 60%) }
+.grid { position:absolute; inset:0; background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px); background-size:80px 80px }
+.sc { position:absolute; inset:0; display:none }
+.abs { position:absolute }
+.c { left:0; right:0; text-align:center }
+.t1 { font-size:110px; font-weight:900; line-height:1.05 } .t2 { font-size:64px; font-weight:900 } .t3 { font-size:40px; font-weight:700 } .t4 { font-size:30px; font-weight:600; opacity:.85 }
+.red { color:#F87171 } .muted { color:#FECACA }
+.drop { width:120px; height:120px; border-radius:50% 0 50% 50%; transform:rotate(-45deg); background:linear-gradient(135deg,#F87171,#B91C1C); box-shadow:0 0 80px #DC2626aa }
+.ring { border:4px solid #F87171; border-radius:50% }
+.card { background:linear-gradient(160deg,#ffffff14,#ffffff06); border:1.5px solid #ffffff22; border-radius:28px; padding:34px; backdrop-filter:blur(4px) }
+.card .i { font-size:72px } .card b { display:block; font-size:40px; margin:10px 0 8px } .card p { font-size:26px; line-height:1.45; color:#FDE2E2 }
+.pill { display:inline-block; background:#DC2626; border-radius:99px; padding:14px 40px; font-size:46px; font-weight:900; box-shadow:0 0 60px #DC2626aa }
+.hosp { width:640px; height:460px }
+.bar { height:40px; border-radius:20px; background:#ffffff18; overflow:hidden } .bar i { display:block; height:100%; border-radius:20px }
+.chip { background:#ffffff12; border:1px solid #ffffff30; border-radius:20px; padding:18px 30px; font-size:30px }
+.chip b { color:#F87171; font-size:44px; display:block; font-weight:900 }
+.panel { background:#ffffff0c; border:1.5px solid #ffffff22; border-radius:30px }
+.tele { display:grid; grid-template-columns:1fr 1fr; gap:14px } .tele div { background:#ffffff10; border-radius:18px; padding:14px 18px; font-size:22px; color:#FECACA } .tele b { display:block; font-size:44px; color:#fff }
+.shot { border-radius:22px; overflow:hidden; box-shadow:0 40px 120px #000c, 0 0 0 2px #ffffff22 } .shot img { display:block; width:100% }
+.rev { width:400px } .rev b { font-size:56px; color:#fff } .rev span { font-size:26px; color:#FECACA; display:block }
+.node { width:44px; height:44px; border-radius:50%; background:#DC2626; box-shadow:0 0 0 10px #DC262633 }
+.ph { width:360px; text-align:center } .ph b { display:block; font-size:34px; color:#F87171 } .ph span { font-size:26px; line-height:1.4; color:#FDE2E2 }
+#brand { position:absolute; top:44px; font-size:24px; letter-spacing:.45em; font-weight:900; opacity:.55 }
+#prog { position:absolute; left:0; bottom:0; height:6px; background:linear-gradient(90deg,#B91C1C,#F87171) }
+#sub { position:absolute; bottom:58px; left:0; right:0; text-align:center; font-size:30px; font-weight:600; color:#FFE4E6; opacity:.9 }
+</style></head>
+<body><div id="stage"><div id="glow"></div><div class="grid"></div>
+
+<!-- 1 logo -->
+<div class="sc" id="s1">
+  <div class="abs ring" id="r1" style="left:910px;top:470px;width:100px;height:100px"></div>
+  <div class="abs ring" id="r2" style="left:910px;top:470px;width:100px;height:100px"></div>
+  <div class="abs drop" id="drop" style="left:900px;top:420px"></div>
+  <div class="abs c t1" id="logo" style="top:600px;font-size:150px"></div>
+  <div class="abs c t3 muted" id="tag" style="top:820px;padding:0 200px"></div>
+</div>
+
+<!-- 2 accident -->
+<div class="sc" id="s2">
+  <div class="abs c" id="clock" style="top:150px;font-size:200px;font-weight:900;letter-spacing:.05em;direction:ltr">17:00</div>
+  <div class="abs c t2" id="acc" style="top:430px"></div>
+  <svg class="abs" style="left:0;top:540px" width="1920" height="200" viewBox="0 0 1920 200"><path id="ecg" d="M0 100 H600 L650 100 L680 30 L720 170 L760 60 L790 100 H1100 L1150 100 L1180 30 L1220 170 L1260 60 L1290 100 H1920" fill="none" stroke="#F87171" stroke-width="6" stroke-linejoin="round"/></svg>
+  <div class="abs c" style="top:790px"><span class="pill" id="need"></span></div>
+</div>
+
+<!-- 3 problem -->
+<div class="sc" id="s3">
+  <div class="abs c t2" id="pt" style="top:110px"></div>
+  <div class="abs card hosp" id="hA" style="left:220px;top:260px"><div class="i">🏥</div><b id="hAn"></b><p id="hAt"></p><div class="bar" style="margin-top:30px"><i id="hAb" style="background:#DC2626"></i></div><div class="t2 red" id="hAv" style="margin-top:14px;direction:ltr;unicode-bidi:isolate;text-align:start"></div></div>
+  <div class="abs card hosp" id="hB" style="left:1060px;top:260px"><div class="i">🏥</div><b id="hBn"></b><p id="hBt"></p><div class="bar" style="margin-top:30px"><i id="hBb" style="background:#F59E0B;width:85%"></i></div><div class="t2" id="hBv" style="margin-top:14px;color:#FCD34D"></div></div>
+  <div class="abs c" id="facts" style="top:800px;display:flex;justify-content:center;gap:30px"></div>
+</div>
+
+<!-- 4 solution -->
+<div class="sc" id="s4">
+  <div class="abs c t1" id="st" style="top:110px"></div>
+  <div class="abs" id="layers" style="left:140px;right:140px;top:330px;display:grid;grid-template-columns:repeat(3,1fr);gap:40px"></div>
+</div>
+
+<!-- 5 drone mission -->
+<div class="sc" id="s5">
+  <div class="abs c t2" id="mt" style="top:60px"></div>
+  <div class="abs panel" style="left:90px;top:190px;width:1180px;height:760px;overflow:hidden">
+    <svg width="1180" height="760" viewBox="0 0 1180 760" style="position:absolute;inset:0">
+      <g opacity=".25" fill="#F87171"><circle cx="300" cy="300" r="170"/><circle cx="760" cy="470" r="220"/><circle cx="980" cy="200" r="120"/></g>
+      <path d="M0 560 C 300 520, 600 650, 1180 600" stroke="#ffffff22" stroke-width="16" fill="none"/>
+      <path d="M520 0 L 580 760" stroke="#ffffff22" stroke-width="14" fill="none"/>
+      <path id="road" d="M170 520 C 300 700, 450 380, 600 560 S 860 720, 1000 470" fill="none" stroke="#A8A29E" stroke-width="10" stroke-linecap="round"/>
+      <path id="air" d="M170 500 Q 590 60 1000 450" fill="none" stroke="#F87171" stroke-width="5" stroke-dasharray="18 14"/>
+      <circle cx="170" cy="510" r="46" fill="#B91C1C"/><text x="170" y="526" text-anchor="middle" font-size="44">🩸</text>
+      <circle cx="1000" cy="460" r="46" fill="#0F766E"/><text x="1000" y="476" text-anchor="middle" font-size="44">🏥</text>
+      <text id="lb1" x="170" y="600" text-anchor="middle" font-size="28" font-weight="700" fill="#fff"></text>
+      <text id="lb2" x="1000" y="550" text-anchor="middle" font-size="28" font-weight="700" fill="#fff"></text>
+      <g id="car"><circle r="30" fill="#57534E"/><text y="12" text-anchor="middle" font-size="34">🚗</text></g>
+      <g id="drn"><circle r="40" fill="#DC2626" opacity=".35"/><circle r="30" fill="#DC2626"/><text y="12" text-anchor="middle" font-size="34">🚁</text></g>
+    </svg>
+  </div>
+  <div class="abs" style="left:1310px;top:190px;width:520px">
+    <div class="panel" style="padding:26px;margin-bottom:22px"><div class="t4" id="dl"></div><div style="font-size:96px;font-weight:900;color:#F87171;direction:ltr" id="dtime">0:00</div>
+      <div class="t4" id="cl" style="margin-top:6px"></div><div style="font-size:60px;font-weight:900;color:#A8A29E;direction:ltr" id="ctime">0:00</div></div>
+    <div class="tele"><div><span id="tl1"></span><b id="temp" style="direction:ltr">4.0°C</b></div><div><span id="tl2"></span><b id="bat" style="direction:ltr">100%</b></div></div>
+    <div class="abs c pill" id="arr" style="position:relative;margin-top:26px;font-size:36px;display:block;text-align:center"></div>
+  </div>
+</div>
+
+<!-- 6 app -->
+<div class="sc" id="s6">
+  <div class="abs c t2" id="at" style="top:60px"></div>
+  <div class="abs shot" id="sh0" style="left:350px;top:165px;width:1220px"><img id="im0"></div>
+  <div class="abs shot" id="sh1" style="left:350px;top:165px;width:1220px"><img id="im1"></div>
+  <div class="abs shot" id="sh2" style="left:350px;top:165px;width:1220px"><img id="im2"></div>
+  <div class="abs c t3" id="acap" style="top:960px"></div>
+</div>
+
+<!-- 7 business -->
+<div class="sc" id="s7">
+  <div class="abs c t2" id="bt" style="top:90px"></div>
+  <div class="abs" id="revs" style="left:120px;top:280px;width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:30px"></div>
+  <svg class="abs" style="left:1260px;top:260px" width="520" height="520" viewBox="0 0 520 520">
+    <circle cx="260" cy="260" r="210" stroke="#ffffff18" stroke-width="40" fill="none"/>
+    <circle id="arc" cx="260" cy="260" r="210" stroke="#F87171" stroke-width="40" fill="none" stroke-linecap="round" transform="rotate(-90 260 260)" stroke-dasharray="1319.5" stroke-dashoffset="1319.5"/>
+    <text id="pct" x="260" y="285" text-anchor="middle" font-size="110" font-weight="900" fill="#fff">0%</text>
+  </svg>
+  <div class="abs t3" id="gm" style="left:1260px;width:520px;text-align:center;top:800px"></div>
+</div>
+
+<!-- 8 roadmap -->
+<div class="sc" id="s8">
+  <div class="abs c t2" id="rt" style="top:120px"></div>
+  <div class="abs" id="line" style="left:200px;top:470px;height:8px;border-radius:4px;background:linear-gradient(90deg,#B91C1C,#F87171)"></div>
+  <div id="phases"></div>
+</div>
+
+<!-- 9 closer -->
+<div class="sc" id="s9">
+  <div class="abs c t1" id="q1" style="top:300px"></div>
+  <div class="abs c t1 red" id="q2" style="top:440px"></div>
+  <div class="abs c t2" id="end" style="top:680px"></div>
+  <div class="abs c t4" id="end2" style="top:790px"></div>
+</div>
+
+<div id="brand">NEXORA</div><div id="sub"></div><div id="prog"></div>
+</div>
+<script>
+const L = __LANG__, SHOTS = __SHOTS__;
+const T = {
+ ar:{dir:"rtl",logo:"دَمي",tag:"الوحدة المناسبة من الدم، للمستشفى المناسب… وبالدرون إذا ما في وقت",acc:"حادث على طريق المطار",need:"مطلوب الآن: 6 وحدات O−",
+  pt:"نقص هنا… وهدر هناك",hAn:"مستشفى الأطراف",hAt:"ينتظر زمرة O− ولا يملكها",hBn:"مستشفى آخر",hBt:"وحدات تنتهي صلاحيتها خلال 48 ساعة",hBv:"⏳ هدر",
+  facts:[["5–7 أيام","صلاحية الصفائح"],["35–42 يومًا","صلاحية الكريات الحمراء"],["كل دقيقة","تفرق في النزيف"]],
+  st:"الحل: دَمي",layers:[["🧠","يتنبأ ويوازن","يتوقع طلب كل زمرة ويوازن المخزون قبل ما ينتهي"],["🫂","يستدعي المتبرع","المؤهل والقريب، للزمرة الناقصة بالذات"],["🚁","درون إسعاف الدم","صندوق مبرّد 2–6°م من بنك الدم للمستشفى"]],
+  mt:"مهمة الدرون: من بنك الدم إلى المستشفى",lb1:"بنك الدم",lb2:"المستشفى",dl:"🚁 بالدرون",cl:"🚗 بالسيارة (ذروة)",tl1:"حرارة الصندوق",tl2:"البطارية",arr:"✅ وصلت · وفّرنا 25 دقيقة",
+  at:"النموذج الأولي يعمل الآن",caps:["طلب طارئ وتتبع الدرون","لوحة القيادة والتنبيهات","وضع الحادث الكبير"],
+  bt:"نموذج العمل",revs:[["6,000 د.أ","اشتراك سنوي للمستشفى"],["90 د.أ","لكل رحلة درون طارئة"],["40,000 د.أ","عقد اللوحة الوطنية"],["10,000 د.أ","رعاية تطبيق المتبرعين"]],gm:"الهامش الإجمالي في السنة 3",
+  rt:"الخطة",phases:[["0–6 أشهر","محاكي ونموذج أولي ✓"],["6–12","برمجيات في 3 مستشفيات"],["12–24","مسار درون تجريبي مرخّص"],["24–36","لوحة وطنية وتوسع"]],
+  q1:"لأن الدم الذي يصل متأخرًا…",q2:"لا يصل.",end:"🩸 دَمي · فريق NEXORA",end2:"Jordan Students Pitch Competition",
+  subs:[[0,4,""],[4.3,9,"الساعة 5 مساءً… مستشفى يحتاج دم O سالب فورًا"],[9.3,14,"المشكلة: نقص بمكان، ووحدات بتنتهي صلاحيتها بمكان تاني"],[14.3,20,"دَمي: منصة ذكاء اصطناعي من 3 طبقات"],[20.3,31,"الدرون بتوصل بـ 9 دقائق بدل 34، والصندوق ثابت على 4°م"],[31.3,36,""],[36.3,42,"دخل واضح من المستشفيات والوزارة والرعاة"],[42.3,47,"نبدأ بالبرمجيات، وبعدها أول رحلة مرخّصة"]]},
+ en:{dir:"ltr",logo:"DAMI",tag:"The right blood unit, to the right hospital… and by drone when there's no time",acc:"An accident on the Airport Road",need:"Needed now: 6 units of O−",
+  pt:"Shortage here… waste there",hAn:"Outskirts Hospital",hAt:"Needs O− and has none",hBn:"Another hospital",hBt:"Units expiring within 48 hours",hBv:"⏳ Waste",
+  facts:[["5–7 days","platelet shelf life"],["35–42 days","red cell shelf life"],["Every minute","counts in bleeding"]],
+  st:"The solution: DAMI",layers:[["🧠","Forecast & balance","Predicts demand per blood type and rebalances stock before it expires"],["🫂","Call the right donor","Eligible, nearby, for exactly the missing type"],["🚁","Blood ambulance drone","A 2–6°C cooled box from blood bank to hospital"]],
+  mt:"The drone mission: blood bank → hospital",lb1:"Blood bank",lb2:"Hospital",dl:"🚁 By drone",cl:"🚗 By car (peak)",tl1:"Box temperature",tl2:"Battery",arr:"✅ Delivered · 25 min saved",
+  at:"The prototype works today",caps:["Emergency request & drone tracking","Dashboard & smart alerts","Mass-casualty mode"],
+  bt:"Business model",revs:[["JOD 6,000","annual hospital subscription"],["JOD 90","per emergency drone flight"],["JOD 40,000","national dashboard contract"],["JOD 10,000","donor-app sponsorship"]],gm:"Year-3 gross margin",
+  rt:"The plan",phases:[["Months 0–6","Simulator & prototype ✓"],["6–12","Software in 3 hospitals"],["12–24","Licensed pilot drone route"],["24–36","National dashboard & scale"]],
+  q1:"Because blood that arrives late…",q2:"doesn't arrive.",end:"🩸 DAMI · Team NEXORA",end2:"Jordan Students Pitch Competition",
+  subs:[[0,4,""],[4.3,9,"5 p.m. — a hospital needs O negative blood, now"],[9.3,14,"The problem: shortages in one place, expiring units in another"],[14.3,20,"DAMI: a three-layer AI platform"],[20.3,31,"The drone arrives in 9 minutes instead of 34, box steady at 4°C"],[31.3,36,""],[36.3,42,"Clear revenue from hospitals, the ministry and sponsors"],[42.3,47,"Software first, then the first licensed flight"]]},
+}[L];
+const $ = (s) => document.querySelector(s);
+document.body.dir = T.dir;
+["logo","tag","acc","need","pt","hAn","hAt","hBn","hBt","hBv","st","mt","dl","cl","tl1","tl2","arr","at","bt","gm","rt","q1","q2","end","end2"].forEach((k) => $("#" + k).textContent = T[k]);
+$("#lb1").textContent = T.lb1; $("#lb2").textContent = T.lb2;
+$("#brand").style[T.dir === "rtl" ? "right" : "left"] = "60px";
+$("#facts").innerHTML = T.facts.map(([a, b]) => `<div class="chip"><b>${a}</b>${b}</div>`).join("");
+$("#layers").innerHTML = T.layers.map(([i, a, b]) => `<div class="card"><div class="i">${i}</div><b>${a}</b><p>${b}</p></div>`).join("");
+$("#revs").innerHTML = T.revs.map(([a, b]) => `<div class="card rev"><b style="direction:ltr;unicode-bidi:isolate">${a}</b><span>${b}</span></div>`).join("");
+const NX = (i) => T.dir === "rtl" ? 1720 - i * 1520 / 3 : 200 + i * 1520 / 3;
+$("#phases").innerHTML = T.phases.map(([a, b], i) => `<div class="abs node" id="n${i}" style="left:${NX(i) - 22}px;top:452px"></div><div class="abs ph" id="p${i}" style="left:${NX(i) - 180}px;top:${i % 2 ? 540 : 260}px"><b>${a}</b><span>${b}</span></div>`).join("");
+[0, 1, 2].forEach((i) => $("#im" + i).src = SHOTS[i]);
+
+const cl = (x) => Math.max(0, Math.min(1, x)), pr = (t, a, b) => cl((t - a) / (b - a));
+const eo = (x) => 1 - Math.pow(1 - x, 3), eb = (x) => { const c = 1.70158; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+function win(id, t, a, b, f = .45) { const el = $(id); const o = Math.min(pr(t, a, a + f), 1 - pr(t, b - f, b)); el.style.display = o > 0 ? "block" : "none"; el.style.opacity = o; return o > 0; }
+function enter(id, t, a, d = .6, dy = 50, sc = 1) { const el = $(id); const k = pr(t, a, a + d); const e = eb(k);
+  el.style.opacity = eo(k); el.style.transform = `translateY(${(1 - e) * dy}px) scale(${sc + (1 - sc) * e})`; }
+function along(path, k) { const p = $(path), len = p.getTotalLength(), pt = p.getPointAtLength(len * cl(k)); return pt; }
+const mmss = (m) => { const s = Math.round(m * 60); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const DUR = 52;
+
+window.render = function (t) {
+  $("#prog").style.width = (t / DUR * 100) + "%";
+  $("#glow").style.transform = `scale(${1 + .06 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 1.6)), 8)})`;
+  const sb = T.subs.find(([a, b]) => t >= a && t < b); $("#sub").textContent = sb ? sb[2] : ""; $("#sub").style.opacity = sb ? Math.min(pr(t, sb[0], sb[0] + .3), 1 - pr(t, sb[1] - .3, sb[1])) : 0;
+
+  if (win("#s1", t, 0, 4.3, .3)) {
+    const k = pr(t, .2, 1.1); $("#drop").style.top = (-200 + eo(k) * 620) + "px"; $("#drop").style.transform = `rotate(-45deg) scale(${1 - .15 * pr(t, 1.1, 1.3) + .15 * pr(t, 1.3, 1.6)})`;
+    [["#r1", 1.1], ["#r2", 1.4]].forEach(([r, s]) => { const q = pr(t, s, s + 1.4); const el = $(r); el.style.opacity = q > 0 ? 1 - q : 0; el.style.transform = `scale(${1 + q * 9})`; });
+    enter("#logo", t, 1.5, .7, 60, .8); enter("#tag", t, 2.3, .7, 40);
+    $("#drop").style.top = t < 1.1 ? $("#drop").style.top : (420 - eo(pr(t, 1.6, 2.2)) * 120) + "px";
+  }
+  if (win("#s2", t, 4, 9.3)) {
+    const m = Math.floor(pr(t, 4.2, 8.8) * 4); $("#clock").textContent = "17:0" + m; enter("#clock", t, 4.1, .6, 60, .9);
+    enter("#acc", t, 4.8, .6); const e = $("#ecg"), L2 = e.getTotalLength(); e.style.strokeDasharray = L2; e.style.strokeDashoffset = L2 * (1 - eo(pr(t, 5, 7.5)));
+    enter("#need", t, 6.2, .6, 0, .5); $("#need").style.boxShadow = `0 0 ${40 + 40 * Math.abs(Math.sin(t * 5))}px #DC2626`;
+  }
+  if (win("#s3", t, 9, 14.3)) {
+    enter("#pt", t, 9.1, .6); enter("#hA", t, 9.5, .6, 80); enter("#hB", t, 9.8, .6, 80);
+    const k = pr(t, 10.3, 12); $("#hAb").style.width = (60 * (1 - k)) + "%"; $("#hAv").textContent = "O− : " + Math.round(6 * (1 - k));
+    $("#hBb").style.opacity = .4 + .6 * Math.abs(Math.sin(t * 4)); $("#hB").style.borderColor = k > .5 ? "#F59E0B88" : "#ffffff22";
+    enter("#facts", t, 12.2, .7, 40);
+  }
+  if (win("#s4", t, 14, 20.3)) {
+    enter("#st", t, 14.1, .6, 60, .85); document.querySelectorAll("#layers .card").forEach((c, i) => { const k = eb(pr(t, 15 + i * .55, 15.7 + i * .55)); c.style.opacity = cl(k); c.style.transform = `translateY(${(1 - k) * 120}px) rotate(${(1 - k) * (i - 1) * 6}deg)`; });
+  }
+  if (win("#s5", t, 20, 31.3)) {
+    enter("#mt", t, 20.1, .6);
+    const kd = pr(t, 21.5, 27), cm = t < 27 ? 9 * Math.max(0, t - 21.5) / 5.5 : 9 + 25 * eo(pr(t, 27, 30.5)), kc = cm / 34;
+    const pd = along("#air", eo(kd) * .999 + .0005), pc = along("#road", kc);
+    $("#drn").setAttribute("transform", `translate(${pd.x},${pd.y - 10 * Math.sin(t * 8) * (kd < 1 ? 1 : 0)})`); $("#car").setAttribute("transform", `translate(${pc.x},${pc.y})`);
+    const a = $("#air"); a.style.strokeDashoffset = -t * 60;
+    $("#dtime").textContent = mmss(9 * kd); $("#ctime").textContent = mmss(cm);
+    $("#temp").textContent = (4 + .12 * Math.sin(t * 3) + .05 * Math.sin(t * 11)).toFixed(1) + "°C"; $("#bat").textContent = Math.round(100 - 38 * kd) + "%";
+    const ka = pr(t, 27.2, 27.8); $("#arr").style.opacity = ka; $("#arr").style.transform = `scale(${.6 + .4 * eb(ka)})`;
+  }
+  if (win("#s6", t, 31, 36.3)) {
+    enter("#at", t, 31.1, .6);
+    [0, 1, 2].forEach((i) => { const a = 31.4 + i * 1.55; const k = pr(t, a, a + .6), out = pr(t, a + 1.55, a + 1.9); const el = $("#sh" + i);
+      el.style.opacity = i === 2 ? k : k * (1 - out); el.style.transform = `perspective(1600px) rotateY(${(1 - eo(k)) * (T.dir === "rtl" ? -25 : 25)}deg) scale(${.9 + .1 * eo(k) + .03 * pr(t, a, a + 2)}) translateX(${-out * 200}px)`; });
+    const ci = Math.min(2, Math.floor(pr(t, 31.4, 36.05) * 3)); $("#acap").textContent = T.caps[ci];
+  }
+  if (win("#s7", t, 36, 42.3)) {
+    enter("#bt", t, 36.1, .6); document.querySelectorAll("#revs .card").forEach((c, i) => { const k = eb(pr(t, 36.6 + i * .4, 37.2 + i * .4)); c.style.opacity = cl(k); c.style.transform = `scale(${.6 + .4 * k})`; });
+    const k = eo(pr(t, 37.5, 40)); $("#arc").style.strokeDashoffset = 1319.5 * (1 - .72 * k); $("#pct").textContent = Math.round(72 * k) + "%"; enter("#gm", t, 38, .6, 30);
+  }
+  if (win("#s8", t, 42, 47.3)) {
+    enter("#rt", t, 42.1, .6); const lw = 1520 * eo(pr(t, 42.5, 45)); $("#line").style.width = lw + "px"; $("#line").style.left = (T.dir === "rtl" ? 1720 - lw : 200) + "px";
+    [0, 1, 2, 3].forEach((i) => { const a = 42.7 + i * .6; const k = eb(pr(t, a, a + .5)); $("#n" + i).style.transform = `scale(${cl(k)})`; enter("#p" + i, t, a + .1, .5, i % 2 ? -40 : 40); });
+  }
+  if (win("#s9", t, 47, 52.5, .5)) {
+    enter("#q1", t, 47.2, .8, 40); enter("#q2", t, 48.2, .8, 40, .8); enter("#end", t, 49.4, .7, 30); enter("#end2", t, 49.9, .7, 20);
+  }
+};
+window.render(0);
+</script></body></html>
