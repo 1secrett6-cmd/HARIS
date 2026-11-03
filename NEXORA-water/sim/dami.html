@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دَمي — إدارة الدم الذكية والتوصيل بالدرون</title>
+<style>
+/*FONT*/
+:root { --ink:#0F172A; --mute:#64748B; --line:#E2E8F0; --bg:#F8FAFC; --red:#B91C1C; --red2:#DC2626; --sky:#0369A1; --ok:#15803D; --amber:#B45309; }
+* { box-sizing:border-box }
+body { margin:0; font-family:'Cairo','Segoe UI',Tahoma,sans-serif; background:var(--bg); color:var(--ink); direction:rtl; line-height:1.55 }
+.wrap { max-width:1260px; margin:0 auto; padding:14px }
+header { background:linear-gradient(150deg,#450A0A,#991B1B 55%,#DC2626); color:#fff; border-radius:18px; padding:18px 22px; display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between; align-items:center }
+header h1 { margin:0; font-size:26px; font-weight:900 } header p { margin:2px 0 0; opacity:.9 }
+.stat { display:flex; gap:8px; flex-wrap:wrap } .stat div { background:#ffffff1f; border:1px solid #ffffff40; border-radius:12px; padding:6px 12px; text-align:center; min-width:96px }
+.stat b { display:block; font-size:20px } .stat span { font-size:12px; opacity:.9 }
+nav { display:flex; gap:6px; margin:12px 0; overflow-x:auto } nav button { border:none; background:#fff; border-radius:12px; padding:10px 16px; font:inherit; font-weight:700; cursor:pointer; white-space:nowrap }
+nav button.on { background:var(--red); color:#fff }
+.row { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:12px } @media (max-width:900px){ .row { grid-template-columns:1fr } }
+.card { background:#fff; border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:0 1px 2px #0001 } .card h3 { margin:2px 0 10px; font-size:16px }
+canvas { width:100%; height:auto; border-radius:12px; background:#EEF2F7 }
+table { width:100%; border-collapse:collapse; font-size:13.5px } th { background:#1E293B; color:#fff; padding:7px 5px; font-weight:700 } td { border-bottom:1px solid var(--line); padding:6px 5px; text-align:center }
+td:first-child { text-align:right; font-weight:700 } .c0 { background:#FEE2E2; color:#991B1B; font-weight:900 } .c1 { background:#FEF3C7; color:#92400E; font-weight:700 } .c2 { background:#ECFDF5; color:#065F46 }
+.btn { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 14px; font:inherit; font-weight:700; cursor:pointer }
+.btn.red { background:var(--red); color:#fff; border-color:transparent } .btn.sky { background:var(--sky); color:#fff; border-color:transparent } .btn:disabled { opacity:.45; cursor:not-allowed }
+select, input[type=number] { font:inherit; padding:7px 10px; border-radius:10px; border:1px solid var(--line); width:100% }
+label { display:block; font-size:13px; color:var(--mute); margin:8px 0 3px }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px }
+.alert { border-right:4px solid var(--amber); background:#FFFBEB; border-radius:10px; padding:8px 10px; margin-bottom:6px; font-size:13.5px; display:flex; justify-content:space-between; gap:8px; align-items:center }
+.alert.crit { border-color:var(--red2); background:#FEF2F2 } .alert.ok { border-color:var(--ok); background:#F0FDF4 }
+.src { border:1.5px solid var(--line); border-radius:12px; padding:10px; margin-bottom:8px; cursor:pointer } .src.best { border-color:var(--ok); background:#F0FDF4 } .src.sel { outline:3px solid var(--sky) }
+.src b { font-size:15px } .src .eta { display:flex; gap:10px; margin-top:4px; font-size:13px } .src .eta span { background:var(--bg); border-radius:8px; padding:2px 8px }
+.tele { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px } .tele div { background:var(--bg); border-radius:10px; padding:8px; text-align:center } .tele span { display:block; font-size:12px; color:var(--mute) } .tele b { font-size:18px }
+.tele .temp b { color:var(--sky) } .tele .temp.bad b { color:var(--red2) }
+.steps { display:flex; gap:4px; margin:10px 0; flex-wrap:wrap } .steps span { flex:1; text-align:center; font-size:12px; padding:6px 4px; border-radius:8px; background:var(--bg); color:var(--mute) } .steps span.on { background:var(--sky); color:#fff } .steps span.done { background:#DCFCE7; color:var(--ok) }
+.cmp { display:flex; gap:8px; margin:8px 0 } .cmp div { flex:1; border-radius:12px; padding:10px; text-align:center } .cmp .d { background:#E0F2FE } .cmp .c { background:#F1F5F9 } .cmp b { display:block; font-size:24px }
+.log div { font-size:13px; padding:5px 8px; border-bottom:1px dashed var(--line) } .log b { color:var(--mute); margin-left:6px; font-weight:600 }
+.donor { display:flex; justify-content:space-between; align-items:center; padding:7px 4px; border-bottom:1px solid var(--line); font-size:13.5px } .tag { border-radius:99px; padding:1px 9px; font-size:12px; font-weight:700 }
+.tag.yes { background:#DCFCE7; color:var(--ok) } .tag.wait { background:#FEF3C7; color:var(--amber) } .tag.no { background:#F1F5F9; color:var(--mute) }
+.muted { color:var(--mute); font-size:12.5px } .chartbox svg { width:100%; height:auto } .switch { display:flex; align-items:center; gap:6px; font-size:13px; margin-top:8px }
+.hide { display:none }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>🩸 دَمي · DAMI</h1><p>إدارة الدم الذكية: تنبؤ، موازنة، متبرعون، وتوصيل طارئ بالدرون</p></div>
+    <div class="stat"><div><b id="s-units">0</b><span>وحدة متاحة</span></div><div><b id="s-crit">0</b><span>نقص حرج</span></div><div><b id="s-exp">0</b><span>تنتهي خلال 48 ساعة</span></div><div><b id="s-dr">0/0</b><span>درون متاحة</span></div></div>
+  </header>
+  <nav id="nav"><button data-v="dash" class="on">🏥 لوحة القيادة</button><button data-v="sos">🚁 طلب طارئ بالدرون</button><button data-v="fc">📈 التنبؤ بالطلب</button><button data-v="donors">🫂 المتبرعون</button><button data-v="mci">🚨 حادث كبير</button></nav>
+
+  <div class="row">
+    <div>
+      <div class="card"><h3>🗺️ خريطة عمليات عمّان (تخطيطية)</h3><canvas id="map" width="760" height="470"></canvas>
+        <div class="muted">🟥 بنك الدم · 🏥 مستشفى · 🚁 درون في الجو · الأرقام والمواقع تخطيطية لأغراض المحاكاة.</div></div>
+      <div id="v-dash" class="card"><h3>📦 مخزون الدم حسب المستشفى والزمرة (وحدات)</h3><div id="inv"></div><p class="muted">الأحمر: نقص حرج (أقل من 3) · الأصفر: منخفض (أقل من 6)</p></div>
+      <div id="v-fc" class="card hide"><h3>📈 التنبؤ بالطلب للأيام الـ 14 القادمة</h3><div class="grid2"><div><label>المستشفى</label><select id="fc-h"></select></div><div><label>الزمرة</label><select id="fc-t"></select></div></div><div class="chartbox" id="fc-chart"></div><div id="fc-note" class="muted"></div></div>
+    </div>
+    <div>
+      <div id="p-dash">
+        <div class="card"><h3>🔔 تنبيهات ذكية</h3><div id="alerts"></div></div>
+      </div>
+      <div id="p-sos" class="hide">
+        <div class="card"><h3>🚑 طلب دم طارئ</h3>
+          <div class="grid2"><div><label>المستشفى الطالب</label><select id="req-h"></select></div><div><label>الزمرة</label><select id="req-t"></select></div></div>
+          <div class="grid2"><div><label>عدد الوحدات</label><input id="req-n" type="number" min="1" max="12" value="4"></div><div><label>الأولوية</label><select id="req-p"><option>حرجة (نزيف)</option><option>عاجلة</option></select></div></div>
+          <div class="switch"><input type="checkbox" id="peak" checked> <label for="peak" style="margin:0">ساعة ذروة مرورية</label></div>
+          <div style="margin-top:10px"><button class="btn red" id="find">🔎 اقترح أفضل مصدر</button></div>
+          <div id="sources" style="margin-top:10px"></div>
+          <button class="btn sky hide" id="launch" style="width:100%;margin-top:6px">🚁 إطلاق الدرون الآن</button>
+        </div>
+        <div class="card" id="flight" style="display:none"><h3>🛰️ تتبع الرحلة</h3>
+          <div class="steps" id="stp"><span>تجهيز الصندوق</span><span>إقلاع</span><span>في الطريق</span><span>هبوط</span><span>تسليم</span></div>
+          <div class="tele"><div><span>الوقت المتبقي</span><b id="t-eta">—</b></div><div><span>السرعة</span><b id="t-spd">—</b></div><div><span>الارتفاع</span><b id="t-alt">—</b></div>
+            <div class="temp" id="t-tempbox"><span>حرارة الصندوق</span><b id="t-temp">—</b></div><div><span>البطارية</span><b id="t-bat">—</b></div><div><span>المسافة المتبقية</span><b id="t-dist">—</b></div></div>
+          <div style="margin-top:8px"><button class="btn" id="coolfail">محاكاة عطل تبريد</button></div>
+        </div>
+      </div>
+      <div id="p-fc" class="hide"><div class="card"><h3>💡 كيف يعمل التنبؤ؟</h3><p class="muted">نموذج سلاسل زمنية يتعلم من الطلب التاريخي ونمط أيام الأسبوع والمواسم، ويقترح مخزونًا مستهدفًا يغطي الطلب المتوقع مع هامش أمان. البيانات هنا اصطناعية لأغراض العرض.</p><div id="fc-kpi"></div></div></div>
+      <div id="p-donors" class="hide"><div class="card"><h3>🫂 استدعاء متبرعين مؤهلين</h3>
+        <div class="grid2"><div><label>الزمرة المطلوبة</label><select id="d-t"></select></div><div><label>قرب المستشفى</label><select id="d-h"></select></div></div>
+        <p class="muted">المؤهل: آخر تبرع قبل 90 يومًا أو أكثر، وضمن 12 كم.</p>
+        <button class="btn red" id="d-send">📲 أرسل دعوات</button><div id="d-sum" style="margin:8px 0"></div><div id="d-list"></div></div></div>
+      <div id="p-mci" class="hide"><div class="card"><h3>🚨 وضع الحوادث الكبرى</h3>
+        <p>محاكاة حادث سير كبير على طريق رئيسي: ثلاث مستشفيات تطلب وحدات عاجلة في نفس اللحظة. النظام يوزع الطلبات على المصادر والدرونز المتاحة تلقائيًا، ويستدعي المتبرعين لتعويض المخزون.</p>
+        <button class="btn red" id="mci-go" style="width:100%">🚨 أطلق سيناريو الحادث</button><div id="mci-plan" style="margin-top:10px"></div></div></div>
+      <div class="card"><h3>🧾 سجل العمليات</h3><div class="log" id="log"></div></div>
+    </div>
+  </div>
+  <p class="muted">محاكاة توضيحية لفكرة مشروع دَمي (فريق NEXORA) ببيانات اصطناعية. التشغيل الفعلي للدرونز يحتاج تصاريح هيئة تنظيم الطيران المدني والجهات المختصة، وكل القرارات الطبية تبقى بيد الكوادر المختصة.</p>
+</div>
+<script>
+(function () {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const TYPES = ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"];
+  const SHARE = { "O+": .36, "A+": .28, "B+": .17, "AB+": .05, "O-": .05, "A-": .04, "B-": .03, "AB-": .02 };
+  let seed = 42; const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+  const SITES = [
+    { id: "bank", name: "بنك الدم الرئيسي", x: 14, y: 12, bank: true, drones: 3 },
+    { id: "h1", name: "مستشفى الشمال", x: 13, y: 4 }, { id: "h2", name: "مستشفى الجبل", x: 9, y: 11, drones: 1 },
+    { id: "h3", name: "مستشفى الشرق", x: 21, y: 10 }, { id: "h4", name: "مستشفى الجنوب", x: 15, y: 20 },
+    { id: "h5", name: "مستشفى الغرب", x: 5, y: 15 }, { id: "h6", name: "المستشفى الجامعي", x: 11, y: 7 },
+    { id: "h7", name: "مستشفى الأطراف", x: 27, y: 22 },
+  ];
+  const HOSP = SITES.filter((s) => !s.bank);
+  const inv = {}, exp = {};
+  SITES.forEach((s) => { inv[s.id] = {}; exp[s.id] = {}; TYPES.forEach((t) => { const k = s.bank ? 60 : 14; inv[s.id][t] = Math.max(0, Math.round(k * SHARE[t] * 4 * (0.4 + rnd()))); exp[s.id][t] = rnd() < .18 ? Math.min(inv[s.id][t], 1 + Math.floor(rnd() * 3)) : 0; }); });
+  inv.h7["O-"] = 0; inv.h4["O-"] = 1; inv.h3["A-"] = 0;
+  let dronesFree = SITES.reduce((a, s) => a + (s.drones || 0), 0); const DR_TOTAL = dronesFree;
+  const flights = [];
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const droneMin = (d) => 3 + d / 80 * 60;
+  const carMin = (d) => 6 + d * 1.45 / ($("#peak") && $("#peak").checked ? 18 : 32) * 60;
+  const site = (id) => SITES.find((s) => s.id === id);
+  const time = () => new Date().toLocaleTimeString("ar-JO", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const log = (m) => { const d = document.createElement("div"); d.innerHTML = `<b>${time()}</b>${m}`; $("#log").prepend(d); while ($("#log").children.length > 14) $("#log").lastChild.remove(); };
+
+  /* ---------- map ---------- */
+  const cv = $("#map"), g = cv.getContext("2d"); const SX = 760 / 32, SY = 470 / 25;
+  const px = (s) => [40 + s.x * SX * .92, 25 + s.y * SY * .9];
+  function drawMap() {
+    g.clearRect(0, 0, 760, 470); g.fillStyle = "#EEF2F7"; g.fillRect(0, 0, 760, 470);
+    g.fillStyle = "#E2E8F0"; [[200, 150, 120], [420, 250, 150], [600, 380, 110], [140, 330, 90]].forEach(([x, y, r]) => { g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); });
+    g.strokeStyle = "#CBD5E1"; g.lineWidth = 6; g.beginPath(); g.moveTo(0, 230); g.bezierCurveTo(250, 200, 500, 300, 760, 420); g.moveTo(330, 0); g.lineTo(380, 470); g.stroke();
+    g.lineWidth = 1;
+    SITES.forEach((s) => {
+      const [x, y] = px(s); const crit = !s.bank && TYPES.some((t) => inv[s.id][t] < 3 && SHARE[t] > .04);
+      g.fillStyle = s.bank ? "#B91C1C" : crit ? "#F59E0B" : "#0369A1"; g.beginPath(); g.roundRect(x - 11, y - 11, 22, 22, 5); g.fill();
+      g.fillStyle = "#fff"; g.font = "bold 13px Cairo"; g.textAlign = "center"; g.fillText(s.bank ? "🩸" : "H", x, y + 5);
+      g.fillStyle = "#0F172A"; g.font = "bold 12px Cairo"; g.fillText(s.name, x, y + 26);
+    });
+    flights.forEach((f) => {
+      const [x1, y1] = px(f.from), [x2, y2] = px(f.to);
+      g.strokeStyle = "#0369A1"; g.setLineDash([6, 5]); g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.setLineDash([]);
+      const k = Math.min(1, f.p); const x = x1 + (x2 - x1) * k, y = y1 + (y2 - y1) * k;
+      g.fillStyle = "#0369A1"; g.beginPath(); g.arc(x, y, 13, 0, 7); g.fill(); g.font = "15px sans-serif"; g.fillText("🚁", x, y + 5);
+    });
+  }
+
+  /* ---------- dashboard ---------- */
+  function refresh() {
+    let total = 0, crit = 0, ex = 0;
+    SITES.forEach((s) => TYPES.forEach((t) => { total += inv[s.id][t]; ex += exp[s.id][t]; if (!s.bank && inv[s.id][t] < 3 && SHARE[t] > .04) crit++; }));
+    $("#s-units").textContent = total; $("#s-crit").textContent = crit; $("#s-exp").textContent = ex; $("#s-dr").textContent = dronesFree + "/" + DR_TOTAL;
+    $("#inv").innerHTML = `<table><tr><th>الموقع</th>${TYPES.map((t) => `<th>${t}</th>`).join("")}</tr>${SITES.map((s) => `<tr><td>${s.bank ? "🩸 " : ""}${s.name}</td>${TYPES.map((t) => { const v = inv[s.id][t]; const c = s.bank ? "c2" : v < 3 ? "c0" : v < 6 ? "c1" : "c2"; return `<td class="${c}">${v}${exp[s.id][t] ? `<sup title="تنتهي قريبًا">⏳${exp[s.id][t]}</sup>` : ""}</td>`; }).join("")}</tr>`).join("")}</table>`;
+    const al = [];
+    HOSP.forEach((h) => TYPES.forEach((t) => { if (inv[h.id][t] < 3 && SHARE[t] > .04) al.push({ crit: true, h, t, txt: `نقص حرج: ${h.name} لديه ${inv[h.id][t]} وحدة ${t} فقط` }); }));
+    SITES.forEach((s) => TYPES.forEach((t) => { if (exp[s.id][t]) { const to = HOSP.filter((h) => h.id !== s.id).sort((a, b) => inv[a.id][t] - inv[b.id][t])[0]; al.push({ crit: false, s, t, to, txt: `${exp[s.id][t]} وحدة ${t} في ${s.name} تنتهي خلال 48 ساعة. الأنسب نقلها إلى ${to.name}` }); } }));
+    $("#alerts").innerHTML = al.slice(0, 9).map((a, i) => `<div class="alert ${a.crit ? "crit" : ""}"><span>${a.crit ? "🔴" : "⏳"} ${a.txt}</span><button class="btn" data-i="${i}">${a.crit ? "اطلب بالدرون" : "انقل"}</button></div>`).join("") || `<div class="alert ok">✅ لا تنبيهات حالية</div>`;
+    $("#alerts").querySelectorAll("button").forEach((b) => b.onclick = () => { const a = al[+b.dataset.i];
+      if (a.crit) { go("sos"); $("#req-h").value = a.h.id; $("#req-t").value = a.t; $("#req-n").value = 4; $("#find").click(); }
+      else { const n = exp[a.s.id][a.t]; inv[a.s.id][a.t] -= n; exp[a.s.id][a.t] = 0; startFlight(a.s, a.to, a.t, n, true); } });
+    drawMap();
+  }
+
+  /* ---------- emergency + drone flight ---------- */
+  let chosen = null;
+  function sources(h, t, n) {
+    return SITES.filter((s) => s.id !== h.id && inv[s.id][t] >= Math.min(n, 2)).map((s) => {
+      const d = dist(s, h); const reserve = s.bank ? 0 : 2; const can = Math.max(0, inv[s.id][t] - reserve);
+      return { s, d, can, dm: droneMin(d), cm: carMin(d) };
+    }).filter((x) => x.can > 0).sort((a, b) => a.dm - b.dm);
+  }
+  $("#find").onclick = () => {
+    const h = site($("#req-h").value), t = $("#req-t").value, n = +$("#req-n").value; const list = sources(h, t, n);
+    if (!list.length) { $("#sources").innerHTML = `<div class="alert crit">لا يوجد مصدر يملك ${t} حاليًا. أرسلنا دعوات عاجلة للمتبرعين.</div>`; $("#launch").classList.add("hide"); return; }
+    chosen = list[0];
+    $("#sources").innerHTML = `<div class="cmp"><div class="d">🚁 بالدرون<b>${Math.round(list[0].dm)} د</b></div><div class="c">🚗 بالسيارة<b>${Math.round(list[0].cm)} د</b></div></div>` +
+      list.slice(0, 4).map((x, i) => `<div class="src ${i ? "" : "best sel"}" data-i="${i}"><b>${i ? "" : "⭐ الأفضل: "}${x.s.name}</b> <span class="muted">متاح ${x.can} وحدة · ${x.d.toFixed(1)} كم</span>
+        <div class="eta"><span>🚁 ${Math.round(x.dm)} دقيقة</span><span>🚗 ${Math.round(x.cm)} دقيقة</span><span>توفير ${Math.round(x.cm - x.dm)} دقيقة</span></div></div>`).join("");
+    $("#sources").querySelectorAll(".src").forEach((el) => el.onclick = () => { $("#sources").querySelectorAll(".src").forEach((e) => e.classList.remove("sel")); el.classList.add("sel"); chosen = list[+el.dataset.i]; });
+    $("#launch").classList.remove("hide"); $("#launch").disabled = dronesFree < 1;
+  };
+  $("#launch").onclick = () => {
+    if (!chosen) return; const h = site($("#req-h").value), t = $("#req-t").value; const n = Math.min(+$("#req-n").value, chosen.can);
+    inv[chosen.s.id][t] -= n; startFlight(chosen.s, h, t, n, false); $("#launch").classList.add("hide"); $("#sources").innerHTML = "";
+  };
+  function startFlight(from, to, t, n, transfer) {
+    if (dronesFree < 1) { log(`⚠️ لا توجد درون متاحة، تحويل ${n} وحدة ${t} بالسيارة`); setTimeout(() => { inv[to.id][t] += n; refresh(); }, 4000); return; }
+    dronesFree--; const d = dist(from, to); const f = { from, to, t, n, p: 0, d, dur: droneMin(d), temp: 4, cool: true, bat: 100, phase: 0, transfer, el: 0 };
+    flights.push(f); log(`🚁 إقلاع: ${n} وحدة ${t} من ${from.name} إلى ${to.name} (${Math.round(f.dur)} دقيقة متوقعة)`);
+    if (!transfer) { $("#flight").style.display = "block"; current = f; }
+    refresh();
+  }
+  let current = null;
+  $("#coolfail").onclick = () => { if (current) { current.cool = false; log("❄️ محاكاة عطل تبريد: النظام سيرصد الارتفاع وينبه فورًا"); } };
+  let last = performance.now();
+  function tick(now) {
+    const dt = (now - last) / 1000; last = now;
+    flights.slice().forEach((f) => {
+      f.el += dt; const simMin = f.el; f.p = Math.max(0, (simMin - 1.2) / (f.dur - 1.2));
+      f.phase = simMin < 1.2 ? 0 : f.p < .08 ? 1 : f.p < .92 ? 2 : f.p < 1 ? 3 : 4;
+      f.temp += f.cool ? (4 - f.temp) * .05 + (Math.random() - .5) * .05 : .03; f.bat = Math.max(5, 100 - f.p * f.d * 2.2);
+      if (!f.cool && f.temp > 6 && !f.warned) { f.warned = true; log(`🌡️ إنذار سلسلة التبريد: ${f.temp.toFixed(1)}°م، تم تفعيل التبريد الاحتياطي وإبلاغ المستشفى`); f.cool = true; }
+      if (f === current) {
+        $("#t-eta").textContent = f.phase >= 4 ? "وصلت ✅" : Math.max(0, Math.round(f.dur - simMin)) + " د";
+        $("#t-spd").textContent = f.phase === 2 ? "80 كم/س" : f.phase ? "25 كم/س" : "0";
+        $("#t-alt").textContent = f.phase === 2 ? "120 م" : f.phase === 1 || f.phase === 3 ? "40 م" : "0 م";
+        $("#t-temp").textContent = f.temp.toFixed(1) + "°م"; $("#t-tempbox").classList.toggle("bad", f.temp > 6);
+        $("#t-bat").textContent = Math.round(f.bat) + "%"; $("#t-dist").textContent = Math.max(0, f.d * (1 - Math.min(1, f.p))).toFixed(1) + " كم";
+        document.querySelectorAll("#stp span").forEach((s, i) => { s.className = i < f.phase ? "done" : i === f.phase ? "on" : ""; });
+      }
+      if (f.p >= 1 && !f.done) {
+        f.done = true; inv[f.to.id][f.t] += f.n; dronesFree++;
+        log(`✅ تسليم ${f.n} وحدة ${f.t} في ${f.to.name} · حرارة الصندوق ${f.temp.toFixed(1)}°م · وفّرنا ~${Math.round(carMin(f.d) - f.dur)} دقيقة`);
+        if (!f.transfer && f.from.bank) log(`📲 استدعاء تلقائي لمتبرعين ${f.t} لتعويض مخزون ${f.from.name}`);
+        setTimeout(() => { flights.splice(flights.indexOf(f), 1); refresh(); }, 1500); refresh();
+      }
+    });
+    if (flights.length) drawMap();
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  /* ---------- forecast ---------- */
+  function forecast() {
+    const h = $("#fc-h").value, t = $("#fc-t").value; seed = h.charCodeAt(1) * 31 + t.length * 7;
+    const base = 6 * SHARE[t] * 10 * (h === "h7" ? .6 : 1);
+    const hist = Array.from({ length: 28 }, (_, i) => Math.max(0, base * (1 + .25 * Math.sin(i / 7 * 6.28)) + (rnd() - .5) * base * .5));
+    const fut = Array.from({ length: 14 }, (_, i) => base * (1 + .25 * Math.sin((28 + i) / 7 * 6.28)));
+    const all = hist.concat(fut); const hi = Math.max(...all) * 1.3 || 1; const W = 640, H = 240, n = all.length;
+    const x = (i) => 30 + i / (n - 1) * (W - 40), y = (v) => H - 25 - v / hi * (H - 40);
+    const band = fut.map((v, i) => `${x(28 + i)},${y(v * 1.25)}`).join(" ") + " " + fut.map((v, i) => `${x(28 + 13 - i)},${y(fut[13 - i] * .75)}`).join(" ");
+    $("#fc-chart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" direction="ltr"><polygon points="${band}" fill="#DC2626" opacity=".12"/>
+      <polyline points="${hist.map((v, i) => `${x(i)},${y(v)}`).join(" ")}" fill="none" stroke="#0F172A" stroke-width="2.2"/>
+      <polyline points="${fut.map((v, i) => `${x(28 + i)},${y(v)}`).join(" ")}" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-dasharray="6 5"/>
+      <line x1="${x(27.5)}" x2="${x(27.5)}" y1="10" y2="${H - 20}" stroke="#94A3B8"/><text x="${x(27.5) + 4}" y="22" font-size="12" fill="#64748B">اليوم</text></svg>
+      <div class="muted">⚫ الطلب الفعلي (28 يومًا) · 🔴 التنبؤ مع نطاق عدم اليقين</div>`;
+    const need = fut.reduce((a, b) => a + b, 0); const stock = inv[h][t]; const target = Math.ceil(need / 2 * 1.2);
+    $("#fc-note").innerHTML = `الطلب المتوقع خلال 14 يومًا: <b>${need.toFixed(0)} وحدة</b>`;
+    $("#fc-kpi").innerHTML = `<div class="cmp"><div class="c">المخزون الحالي<b>${stock}</b></div><div class="d">المستهدف لأسبوع<b>${target}</b></div></div>` +
+      (stock < target ? `<div class="alert crit">يُنصح بطلب ${target - stock} وحدة ${t} أو استدعاء متبرعين</div>` : `<div class="alert ok">المخزون كافٍ للأسبوع القادم</div>`);
+  }
+
+  /* ---------- donors ---------- */
+  const donors = Array.from({ length: 60 }, (_, i) => ({ id: 1000 + i, t: TYPES[Math.floor(rnd() * 8)], days: Math.floor(rnd() * 200), km: +(rnd() * 18).toFixed(1), st: "" }));
+  function donorList() {
+    const t = $("#d-t").value; const el = donors.filter((d) => d.t === t && d.days >= 90 && d.km <= 12);
+    $("#d-list").innerHTML = el.slice(0, 12).map((d) => `<div class="donor"><span>متبرع #${d.id} · ${d.t} · ${d.km} كم · آخر تبرع قبل ${d.days} يومًا</span><span class="tag ${d.st === "yes" ? "yes" : d.st === "wait" ? "wait" : "no"}">${d.st === "yes" ? "قادم ✅" : d.st === "wait" ? "بانتظار الرد" : "مؤهل"}</span></div>`).join("") || `<div class="muted">لا يوجد متبرعون مؤهلون قريبون لهذه الزمرة؛ نوسّع النطاق تلقائيًا.</div>`;
+    const yes = el.filter((d) => d.st === "yes").length; $("#d-sum").innerHTML = `مؤهلون: <b>${el.length}</b> · وافقوا: <b>${yes}</b>`;
+    return el;
+  }
+  $("#d-send").onclick = () => { const el = donorList(); el.forEach((d) => d.st = "wait"); donorList(); log(`📲 أُرسلت ${el.length} دعوة لمتبرعي ${$("#d-t").value}`);
+    el.forEach((d, i) => setTimeout(() => { d.st = Math.random() < .55 ? "yes" : ""; donorList(); }, 900 + i * 450)); };
+
+  /* ---------- mass casualty ---------- */
+  $("#mci-go").onclick = () => {
+    const reqs = [["h4", "O-", 4], ["h3", "O+", 6], ["h7", "A+", 3]];
+    $("#mci-plan").innerHTML = reqs.map(([h, t, n]) => { const s = sources(site(h), t, n)[0]; return `<div class="alert crit"><span>${site(h).name}: ${n} × ${t} ← ${s ? s.s.name + " (🚁 " + Math.round(s.dm) + " د)" : "متبرعون"}</span></div>`; }).join("");
+    log("🚨 تفعيل وضع الحادث الكبير: توزيع تلقائي للطلبات على الدرونز");
+    reqs.forEach(([h, t, n], i) => setTimeout(() => { const s = sources(site(h), t, n)[0]; if (s) { const k = Math.min(n, s.can); inv[s.s.id][t] -= k; startFlight(s.s, site(h), t, k, true); } }, i * 600));
+    setTimeout(() => log("📲 استدعاء جماعي لمتبرعي O- و O+ و A+ لتعويض المخزون"), 2200);
+  };
+
+  /* ---------- navigation ---------- */
+  const fill = (sel, items) => { $(sel).innerHTML = items.map(([v, l]) => `<option value="${v}">${l}</option>`).join(""); };
+  fill("#req-h", HOSP.map((h) => [h.id, h.name])); fill("#req-t", TYPES.map((t) => [t, t])); $("#req-t").value = "O-"; $("#req-h").value = "h7";
+  fill("#fc-h", HOSP.map((h) => [h.id, h.name])); fill("#fc-t", TYPES.map((t) => [t, t])); $("#fc-t").value = "O+";
+  fill("#d-t", TYPES.map((t) => [t, t])); fill("#d-h", HOSP.map((h) => [h.id, h.name])); $("#d-t").value = "O-";
+  $("#fc-h").onchange = forecast; $("#fc-t").onchange = forecast; $("#d-t").onchange = donorList;
+  function go(v) {
+    document.querySelectorAll("#nav button").forEach((b) => b.classList.toggle("on", b.dataset.v === v));
+    ["dash", "sos", "fc", "donors", "mci"].forEach((k) => { const p = $("#p-" + k); if (p) p.classList.toggle("hide", k !== v); });
+    $("#v-dash").classList.toggle("hide", v === "fc"); $("#v-fc").classList.toggle("hide", v !== "fc");
+    if (v === "fc") forecast(); if (v === "donors") donorList();
+  }
+  document.querySelectorAll("#nav button").forEach((b) => b.onclick = () => go(b.dataset.v));
+  refresh(); log("🟢 النظام جاهز: مراقبة المخزون في 7 مستشفيات وبنك الدم");
+})();
+</script>
+</body>
+</html>
