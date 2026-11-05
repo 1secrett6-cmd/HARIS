@@ -25,3 +25,4 @@ secrets.json
 
 # Local runtime/cache
 .streamlit/secrets.toml
+NEXORA-water/out/SUBMISSION/_work/
