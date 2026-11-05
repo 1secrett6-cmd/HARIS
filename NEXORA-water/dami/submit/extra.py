@@ -3,10 +3,10 @@
 import art
 
 TEAM = {
-    "ar": [("عبد الرحمن بلال أبورمان", "قائد الفريق"), ("مرح يوسف القيسي", ""), ("ندين محمد الصمادي", ""),
-           ("داريا علي الشقاقحة", ""), ("عبد المنعم فادي قعدان", "")],
-    "en": [("Abdulrahman Bilal Aburumman", "Team Leader"), ("Marah Yousef Al-Qaisi", ""), ("Nadeen Mohammad Al-Smadi", ""),
-           ("Darya Ali Al-Shaqaqha", ""), ("Abdulmonem Fadi Qadan", "")],
+    "ar": [("عبد الرحمن بلال أبورمان", "هندسة البرمجيات"), ("مرح يوسف القيسي", "الذكاء الاصطناعي"), ("ندين محمد الصمادي", "الذكاء الاصطناعي"),
+           ("داريا علي الشقاقحة", "الذكاء الاصطناعي"), ("عبد المنعم فادي قعدان", "الذكاء الاصطناعي")],
+    "en": [("Abdulrahman Bilal Aburumman", "Software Engineer"), ("Marah Yousef Al-Qaisi", "AI Engineer"), ("Nadeen Mohammad Al-Smadi", "AI Engineer"),
+           ("Darya Ali Al-Shaqaqha", "AI Engineer"), ("Abdulmonem Fadi Qadan", "AI Engineer")],
 }
 
 X = {
@@ -33,14 +33,14 @@ X = {
     dn_t="المتبرع الذكي",
     dn=[("✅", "مؤهل", "آخر تبرع قبل 90 يومًا أو أكثر"), ("📍", "قريب", "ضمن 12 كم من المستشفى"),
         ("🎯", "موجّه", "للزمرة الناقصة فقط"), ("❤️", "أثر واضح", "يعرف أين ذهبت وحدته")],
-    tm_t="فريق NEXORA", tm_s="طلاب الذكاء الاصطناعي وعلم البيانات",
+    tm_t="فريق دَمي", tm_s="هندسة البرمجيات + الذكاء الاصطناعي",
     notes=dict(causes="الدم ينقص لأسباب كثيرة: التبرع موسمي، والصلاحية قصيرة، والزمر النادرة، والتوزيع غير المتوازن، والطوارئ المفاجئة، والتنسيق اليدوي.",
                mods="النظام ليس درونز فقط: ثماني وحدات تبدأ من تتبع كل وحدة دم وتنتهي بلوحة وطنية لوزارة الصحة.",
                jr="من لحظة الطلب حتى الوصول: ثوانٍ لاتخاذ القرار، ودقائق للتوصيل.",
                cc="الحساسات تراقب الحرارة في الثلاجة والصندوق كل ثانية، وأي خلل يطلق إنذارًا فوريًا.",
                cm="محرك التطابق يعرف قواعد التوافق بين الزمر، ويقترح البديل الآمن إذا نفدت الزمرة.",
                dn="بدل حملات عامة، نستدعي المتبرع المؤهل القريب للزمرة الناقصة بالذات.",
-               tm="نحن فريق NEXORA من طلاب الذكاء الاصطناعي وعلم البيانات."),
+               tm="نحن فريق دَمي: مهندس برمجيات وأربعة متخصصين في الذكاء الاصطناعي."),
 ),
 "en": dict(
     causes_t="Why does blood run short?",
@@ -65,14 +65,14 @@ X = {
     dn_t="The smart donor",
     dn=[("✅", "Eligible", "last donation 90+ days ago"), ("📍", "Nearby", "within 12 km of the hospital"),
         ("🎯", "Targeted", "only for the missing type"), ("❤️", "Visible impact", "knows where their unit went")],
-    tm_t="Team NEXORA", tm_s="AI & Data Science students",
+    tm_t="Team DAMI", tm_s="Software Engineering + Artificial Intelligence",
     notes=dict(causes="Blood runs short for many reasons: seasonal donation, short shelf life, rare types, uneven distribution, sudden emergencies and manual coordination.",
                mods="It's not just drones: eight modules, from tracking every unit to a national dashboard for the Ministry of Health.",
                jr="From request to arrival: seconds to decide, minutes to deliver.",
                cc="Sensors watch temperature in the fridge and the box every second; any fault triggers an instant alarm.",
                cm="The matching engine knows blood compatibility rules and proposes a safe alternative if a type runs out.",
                dn="Instead of generic drives, we call eligible nearby donors for exactly the missing type.",
-               tm="We are team NEXORA, AI and Data Science students."),
+               tm="We are Team DAMI: one software engineer and four AI engineers."),
 ),
 }
 
@@ -161,7 +161,7 @@ def donors(s, T, lang, rtl, start, end, shot):
 def team(s, T, lang, rtl, start, end):
     x = X[lang]
     cards = "".join(
-        f'<div class="card" style="padding:40px 26px;{"border-color:#F87171;background:#DC262622" if role else ""}"><div style="display:inline-flex;background:#DC2626;border-radius:50%;padding:22px">{art.icon("people", 90)}</div>'
+        f'<div class="card" style="padding:40px 26px;"><div style="display:inline-flex;background:#DC2626;border-radius:50%;padding:22px">{art.icon("people", 90)}</div>'
         f'<b style="font-size:34px;line-height:1.3">{n}</b><span>{role or "&nbsp;"}</span></div>' for n, role in TEAM[lang])
     s(f"""<div class="abs h" style="left:0;right:0;top:120px;text-align:center">{x['tm_t']}</div>
 <div class="abs l red" style="left:0;right:0;top:250px;text-align:center">{x['tm_s']}</div>

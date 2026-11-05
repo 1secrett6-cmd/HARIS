@@ -25,7 +25,7 @@ SHOTS = {"ar": OUT / "DAMI" / "screens", "en": OUT / "DAMI_EN" / "screens"}
 TXT = {
 "ar": dict(
     dir="rtl", name="دَمي", slogan="الدم يصل… قبل أن يفوت الوقت",
-    sub="منصة ذكاء اصطناعي ودرونز طبية لإدارة الدم ونقله في الطوارئ", team="فريق NEXORA · الذكاء الاصطناعي وعلم البيانات",
+    sub="منصة ذكاء اصطناعي ودرونز طبية لإدارة الدم ونقله في الطوارئ", team="فريق دَمي · هندسة البرمجيات والذكاء الاصطناعي",
     s2t="30–40%", s2a="من وفيات الإصابات سببها النزيف", s2b="وكل دقيقة تأخير في وصول الدم ترفع الخطر",
     s2src="المصدر: Kauvar et al., Journal of Trauma, 2006",
     s3t="نقص هنا… وهدر هناك", s3a="مستشفى ينتظر O− ولا يجد", s3b="ووحدات تنتهي صلاحيتها في مستشفى آخر",
@@ -69,7 +69,7 @@ TXT = {
 ),
 "en": dict(
     dir="ltr", name="DAMI", slogan="Blood that arrives… before it's too late",
-    sub="An AI platform and medical drones for managing and delivering blood in emergencies", team="Team NEXORA · AI & Data Science",
+    sub="An AI platform and medical drones for managing and delivering blood in emergencies", team="Team DAMI · Software Engineering & Artificial Intelligence",
     s2t="30–40%", s2a="of trauma deaths are caused by bleeding", s2b="and every minute of delay raises the risk",
     s2src="Source: Kauvar et al., Journal of Trauma, 2006",
     s3t="Shortage here… waste there", s3a="One hospital needs O− and has none", s3b="while units expire at another",
@@ -156,7 +156,7 @@ def deck(lang):
     def s(inner, cls="", note=None):
         NOTES.append(note if note is not None else next(orig))
         n = len(S) + 1
-        S.append(f'<section class="s {cls}"><div class="brand" style="{start}:90px">NEXORA · DAMI</div>{inner}'
+        S.append(f'<section class="s {cls}"><div class="brand" style="{start}:90px">TEAM DAMI</div>{inner}'
                  f'<div class="pg" style="{end}:90px">{n:02d}</div></section>')
 
     # 1 cover
@@ -223,7 +223,7 @@ def deck(lang):
     # 12 closer
     s(f"""<div class="abs" style="{end}:60px;top:300px;opacity:.9">{art.drone(760)}</div>
 <div class="abs" style="{start}:120px;top:330px;width:1000px"><div class="h" style="font-size:96px">{T['s12a']}</div>
-<div class="h red" style="font-size:120px;margin-top:20px">{T['s12b']}</div><div style="margin-top:70px;font-size:40px;font-weight:900">🩸 {T['name']} · NEXORA</div></div>""")
+<div class="h red" style="font-size:120px;margin-top:20px">{T['s12b']}</div><div style="margin-top:70px;font-size:40px;font-weight:900">🩸 {'فريق دَمي' if rtl else 'Team DAMI'}</div></div>""")
     return S, NOTES
 
 
@@ -240,7 +240,7 @@ def bmc_html(lang):
 .top { display:flex; align-items:center; gap:30px; background:linear-gradient(120deg,#3B0A10,#B91C1C); color:#fff; border-radius:30px; padding:26px 40px; margin-bottom:26px }
 .top h1 { font-size:58px; font-weight:900; line-height:1 } .top p { font-size:26px; opacity:.85 }
 .kps { margin-inline-start:auto; display:flex; gap:16px } .kp { background:#ffffff1f; border-radius:18px; padding:12px 24px; text-align:center }
-.kp span { display:block; font-size:20px; opacity:.85 } .kp b { font-size:32px; direction:ltr; unicode-bidi:isolate }
+.kp span { display:block; font-size:20px; opacity:.85 } .kp { white-space:nowrap } .kp b { font-size:32px; direction:ltr; unicode-bidi:isolate }
 .grid { flex:1; display:grid; gap:16px; grid-template-columns:repeat(10,1fr); grid-template-rows:1fr 1fr .78fr;
   grid-template-areas:"kp kp ka ka vp vp cr cr cs cs" "kp kp kr kr vp vp ch ch cs cs" "cost cost cost cost cost rev rev rev rev rev" }
 .b { background:#fff; border:3px solid #F5E1E1; border-radius:26px; padding:22px 24px; overflow:hidden }
@@ -252,7 +252,7 @@ def bmc_html(lang):
 .b-cost{grid-area:cost;background:#FAFAF9}.b-rev{grid-area:rev;background:#FFFBEB;border-color:#FCD34D}
 .ft { font-size:20px; color:#A8A29E; margin-top:12px }
 """
-    body = f"""<div class="bmc"><div class="top"><div style="font-size:90px">🩸</div><div><h1>{T['name']} · {T['bmc_t']}</h1><p>{T['slogan']} · {T['team']}</p></div><div class="kps">{kpis}</div></div>
+    body = f"""<div class="bmc"><div class="top"><div style="font-size:90px">🩸</div><div><h1>{T['name']} · {T['bmc_t']}</h1><p>{T['team']}</p></div><div class="kps">{kpis}</div></div>
 <div class="grid">{cells}</div><div class="ft">{" · ".join(n for n, _ in extra.TEAM[lang])} — {T['foot']}</div></div>"""
     return css, body
 
