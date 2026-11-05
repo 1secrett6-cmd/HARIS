@@ -16,6 +16,7 @@ from pptx import Presentation  # noqa: E402
 from pptx.util import Emu  # noqa: E402
 
 import art  # noqa: E402
+import extra  # noqa: E402
 from common import OUT, font_css  # noqa: E402
 
 DEST = OUT / "SUBMISSION"
@@ -55,8 +56,8 @@ TXT = {
     bmc_t="نموذج العمل التجاري", kpi=[("الاستثمار الأولي", "58,000 د.أ"), ("إيرادات السنة 3", "325,000 د.أ"), ("الهامش الإجمالي س3", "72%")],
     bmc=dict(
         kp=("الشركاء الرئيسيون", "Key Partners", ["وزارة الصحة وبنك الدم الوطني", "المستشفيات الخاصة والحكومية", "مصنعو ومشغلو الدرونز الطبية", "هيئة تنظيم الطيران المدني", "الهلال الأحمر والرعاة"]),
-        ka=("الأنشطة الرئيسية", "Key Activities", ["تطوير نماذج التنبؤ", "تشغيل الدرونز ومركز الطوارئ", "مراقبة سلسلة التبريد", "استدعاء المتبرعين"]),
-        kr=("الموارد الرئيسية", "Key Resources", ["منصة AI وبيانات المخزون", "درونز وصناديق تبريد ذكية", "حساسات حرارة IoT", "فريق تقني وطيارون مرخّصون"]),
+        ka=("الأنشطة الرئيسية", "Key Activities", ["تطوير نماذج التنبؤ ومحرك التطابق", "تشغيل الدرونز ومركز الطوارئ", "مراقبة سلسلة التبريد", "استدعاء المتبرعين"]),
+        kr=("الموارد الرئيسية", "Key Resources", ["منصة AI وبيانات المخزون", "رموز RFID لكل وحدة دم", "درونز وصناديق تبريد ذكية", "حساسات حرارة IoT", "فريق تقني وطيارون مرخّصون"]),
         vp=("القيمة المقدّمة", "Value Propositions", ["دم طارئ خلال دقائق لا نصف ساعة", "هدر أقل بموازنة المخزون", "رؤية وطنية لحظية للدم", "متبرع في الوقت المناسب"]),
         cr=("العلاقة مع العملاء", "Customer Relationships", ["عقد خدمة سنوي", "مركز طوارئ 24/7", "تقارير أثر شهرية"]),
         ch=("القنوات", "Channels", ["بيع مباشر للمستشفيات", "شراكة مع وزارة الصحة", "تطبيق جوال ولوحة ويب"]),
@@ -99,8 +100,8 @@ TXT = {
     bmc_t="Business Model Canvas", kpi=[("Initial investment", "JOD 58,000"), ("Year-3 revenue", "JOD 325,000"), ("Year-3 gross margin", "72%")],
     bmc=dict(
         kp=("Key Partners", "", ["Ministry of Health & National Blood Bank", "Private & public hospitals", "Medical drone makers & operators", "Civil Aviation Regulatory Commission", "Red Crescent & sponsors"]),
-        ka=("Key Activities", "", ["Building forecasting models", "Running drones & emergency center", "Cold-chain monitoring", "Donor call-ups"]),
-        kr=("Key Resources", "", ["AI platform & stock data", "Drones & smart cooling boxes", "IoT temperature sensors", "Tech team & licensed pilots"]),
+        ka=("Key Activities", "", ["Forecasting models & matching engine", "Running drones & emergency center", "Cold-chain monitoring", "Donor call-ups"]),
+        kr=("Key Resources", "", ["AI platform & stock data", "RFID tag on every blood unit", "Drones & smart cooling boxes", "IoT temperature sensors", "Tech team & licensed pilots"]),
         vp=("Value Propositions", "", ["Emergency blood in minutes, not half an hour", "Less waste through stock balancing", "Live national view of blood", "The right donor at the right time"]),
         cr=("Customer Relationships", "", ["Annual service contract", "24/7 emergency center", "Monthly impact reports"]),
         ch=("Channels", "", ["Direct sales to hospitals", "Ministry of Health partnership", "Mobile app & web dashboard"]),
@@ -150,9 +151,10 @@ def deck(lang):
     T = TXT[lang]
     rtl = T["dir"] == "rtl"
     start, end = ("right", "left") if rtl else ("left", "right")
-    S = []
+    S, NOTES, orig = [], [], iter(T["notes"])
 
-    def s(inner, cls=""):
+    def s(inner, cls="", note=None):
+        NOTES.append(note if note is not None else next(orig))
         n = len(S) + 1
         S.append(f'<section class="s {cls}"><div class="brand" style="{start}:90px">NEXORA · DAMI</div>{inner}'
                  f'<div class="pg" style="{end}:90px">{n:02d}</div></section>')
@@ -175,6 +177,7 @@ def deck(lang):
  <div style="text-align:center;width:640px">{art.hospital(260, '#DC2626')}<div class="row" style="justify-content:center;gap:20px;margin-top:-30px">{art.bag(130, .02)}<span class="big" style="font-size:120px">0</span></div><div class="l" style="margin-top:10px">{T['s3a']}</div></div>
  <div style="text-align:center;width:640px">{art.hospital(260, '#F59E0B')}<div class="row" style="justify-content:center;gap:20px;margin-top:-30px">{art.bag(130, .9, '#F59E0B')}<span style="font-size:110px">⏳</span></div><div class="l" style="margin-top:10px">{T['s3b']}</div></div></div>
 <div class="abs row" style="left:0;right:0;bottom:90px;justify-content:center;gap:30px">{''.join(f'<div class="chip"><b>{a}</b><span>{b}</span></div>' for a, b in T['s3c'])}</div>""")
+    extra.causes(s, T, lang, rtl, start, end)
     # 4 solution
     s(f"""<div class="abs h" style="left:0;right:0;top:120px;text-align:center">{T['s4t']}</div>
 <div class="abs" style="left:150px;right:150px;top:340px;display:grid;grid-template-columns:repeat(3,1fr);gap:50px">
@@ -182,10 +185,15 @@ def deck(lang):
     # 5 system
     s(f"""<div class="abs h" style="left:0;right:0;top:110px;text-align:center">{T['s5t']}</div>
 <div class="abs" style="left:110px;top:330px">{art.system(T['s5'], rtl=rtl)}</div>""")
+    extra.modules(s, T, lang, rtl, start, end)
+    extra.journey(s, T, lang, rtl, start, end)
     # 6 drone
     feats = "".join(f'<div class="row" style="gap:26px;margin-bottom:34px"><div style="background:#DC2626;border-radius:24px;padding:14px;display:flex">{art.icon(k, 80)}</div><div><div style="font-size:42px;font-weight:900">{a}</div><div class="m" style="font-size:28px">{b}</div></div></div>' for k, a, b in T['s6'])
     s(f"""<div class="abs h" style="{start}:110px;top:100px">{T['s6t']}</div>
 <div class="abs" style="{end}:60px;top:220px">{art.drone(1050)}</div><div class="abs" style="{start}:120px;top:260px">{feats}</div>""")
+    extra.coldchain(s, T, lang, rtl, start, end)
+    extra.compat(s, T, lang, rtl, start, end)
+    extra.donors(s, T, lang, rtl, start, end, shot64(lang, "donors", 1400))
     # 7 app
     s(f"""<div class="abs h" style="left:0;right:0;top:70px;text-align:center">{T['s7t']}</div>
 <div class="abs shot" style="{start}:110px;top:230px;width:1180px"><img src="{shot64(lang, 'sos')}"></div>
@@ -211,11 +219,12 @@ def deck(lang):
 <div class="abs" style="left:150px;right:150px;top:340px;display:grid;grid-template-columns:repeat(3,1fr);gap:50px">
 {''.join(f'<div class="card"><div style="display:inline-flex;background:#DC2626;border-radius:50%;padding:30px">{art.icon(k, 140)}</div><b>{a}</b><span>{b}</span></div>' for k, a, b in T['s11'])}</div>
 <div class="abs" style="left:0;right:0;bottom:110px;text-align:center;font-size:32px;font-weight:700;opacity:.85">{T['team']}</div>""")
+    extra.team(s, T, lang, rtl, start, end)
     # 12 closer
     s(f"""<div class="abs" style="{end}:60px;top:300px;opacity:.9">{art.drone(760)}</div>
 <div class="abs" style="{start}:120px;top:330px;width:1000px"><div class="h" style="font-size:96px">{T['s12a']}</div>
 <div class="h red" style="font-size:120px;margin-top:20px">{T['s12b']}</div><div style="margin-top:70px;font-size:40px;font-weight:900">🩸 {T['name']} · NEXORA</div></div>""")
-    return S
+    return S, NOTES
 
 
 def bmc_html(lang):
@@ -244,7 +253,7 @@ def bmc_html(lang):
 .ft { font-size:20px; color:#A8A29E; margin-top:12px }
 """
     body = f"""<div class="bmc"><div class="top"><div style="font-size:90px">🩸</div><div><h1>{T['name']} · {T['bmc_t']}</h1><p>{T['slogan']} · {T['team']}</p></div><div class="kps">{kpis}</div></div>
-<div class="grid">{cells}</div><div class="ft">{T['foot']}</div></div>"""
+<div class="grid">{cells}</div><div class="ft">{" · ".join(n for n, _ in extra.TEAM[lang])} — {T['foot']}</div></div>"""
     return css, body
 
 
@@ -268,10 +277,11 @@ def build():
     DEST.mkdir(parents=True, exist_ok=True)
     work = DEST / "_work"
     work.mkdir(exist_ok=True)
-    jobs = []
+    jobs, notes = [], {}
     for lang in ("ar", "en"):
         L = lang.upper()
-        (work / f"deck_{lang}.html").write_text(page(lang, "", "".join(deck(lang))), encoding="utf-8")
+        slides, notes[lang] = deck(lang)
+        (work / f"deck_{lang}.html").write_text(page(lang, "", "".join(slides)), encoding="utf-8")
         css, body = bmc_html(lang)
         (work / f"bmc_{lang}.html").write_text(page(lang, css, body), encoding="utf-8")
         jobs += [dict(html=str(work / f"deck_{lang}.html"), pdf=str(DEST / f"DAMI_Pitch_Deck_{L}.pdf"), png=str(work / f"deck_{lang}"), sel=".s", w=1920, h=1080),
@@ -280,7 +290,7 @@ def build():
     subprocess.run(["node", str(HERE / "render.js"), str(work / "jobs.json")], check=True, cwd="/tmp")
     for lang in ("ar", "en"):
         L = lang.upper()
-        pptx(sorted(work.glob(f"deck_{lang}_*.png")), TXT[lang]["notes"], DEST / f"DAMI_Pitch_Deck_{L}.pptx")
+        pptx(sorted(work.glob(f"deck_{lang}_*.png")), notes[lang], DEST / f"DAMI_Pitch_Deck_{L}.pptx")
         pptx(sorted(work.glob(f"bmc_{lang}_*.png")), None, DEST / f"DAMI_BMC_{L}.pptx", 1920, 1358)
     return sorted(p for p in DEST.iterdir() if p.is_file())
 
