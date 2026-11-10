@@ -1,0 +1,252 @@
+"""Team briefing guide content (Arabic & English). Numbers come from fin.py so everything stays consistent."""
+
+from fin import BE_BASE, BUDGET, M, OPT, REV_BY
+
+R = [f"{v:,.0f}" for v in M["rev"]]
+EB = [f"{v:,.0f}" for v in M["ebitda"]]
+FUND = f"{round(M['funding']):,}"
+
+SPEAKERS = {
+    "en": [("Abdulrahman (Software Engineer)", "Opening story, how the system works, live demo, closing", "Slides 1, 6, 8–10, 13 (demo), 24–25"),
+           ("Marah (AI Engineer)", "The problem and why blood runs short", "Slides 2–4"),
+           ("Nadeen (AI Engineer)", "The AI: forecasting, matching engine, smart donor", "Slides 5, 7, 11–12"),
+           ("Darya (AI Engineer)", "Proof, market size, competition, revenue model", "Slides 14–18"),
+           ("Abdulmonem (AI Engineer)", "Costs, budget, financial summary, plan and the ask", "Slides 19–23")],
+    "ar": [("عبد الرحمن (مهندس برمجيات)", "القصة الافتتاحية وكيف يعمل النظام والعرض الحي والختام", "الشرائح 1 و6 و8–10 و13 (العرض الحي) و24–25"),
+           ("مرح (ذكاء اصطناعي)", "المشكلة ولماذا ينقص الدم", "الشرائح 2–4"),
+           ("ندين (ذكاء اصطناعي)", "الذكاء الاصطناعي: التنبؤ ومحرك التطابق والمتبرع الذكي", "الشرائح 5 و7 و11–12"),
+           ("داريا (ذكاء اصطناعي)", "الإثبات العالمي وحجم السوق والمنافسة ونموذج الإيرادات", "الشرائح 14–18"),
+           ("عبد المنعم (ذكاء اصطناعي)", "التكاليف والميزانية والملخص المالي والخطة والطلب", "الشرائح 19–23")],
+}
+
+G = {
+"en": dict(
+    title="Team Guide", sub="What we explain, how we explain it, and how we defend every number in front of the judges",
+    sections=[
+        ("The project in one minute", [
+            ("p", "DAMI is an AI platform and a medical-drone service that makes sure the right blood unit reaches the right hospital before it is needed. It forecasts demand for every blood type at every hospital, rebalances stock before units expire, calls the right donors, and in emergencies launches a cooled drone that carries blood from the blood bank to the hospital in minutes."),
+            ("call", "Elevator pitch (memorize): “Bleeding causes 30–40% of trauma deaths. DAMI uses AI to forecast and balance blood stock, call the right donors, and fly blood by cooled drone in minutes instead of half an hour.”"),
+        ]),
+        ("The problem (with verified facts)", [
+            ("ul", ["Hemorrhage causes 30–40% of trauma deaths, and 33–56% of those deaths happen before the patient reaches hospital (Kauvar, Lefering & Wade, Journal of Trauma, 2006).",
+                    "Most trauma deaths happen in the first hours after injury, so delivery time matters.",
+                    "Blood expires: platelets last only 5–7 days, red cells 35–42 days at 2–6°C. One hospital runs short while another wastes expiring units.",
+                    "O negative is the type used first in severe bleeding before the patient's type is known, and it is scarce.",
+                    "Coordination today is mostly phone calls; general donation drives don't target the missing type."]),
+            ("call", "Never say “3 out of 10 patients die from blood shortage”. We have no source for that. Use the 30–40% figure and name the source."),
+        ]),
+        ("Why blood runs short", [
+            ("table", ["Cause", "What it means"], [["Seasonal donation", "Donations drop in summer, Ramadan and exam periods"], ["Short shelf life", "Platelets 5–7 days; red cells 35–42 days"],
+                      ["Rare types", "O− is always needed and rarely available"], ["Uneven distribution", "Stock concentrates in the center; outskirts wait"],
+                      ["Sudden emergencies", "One major accident can use days of stock"], ["Manual coordination", "Phone calls, no live national view"]]),
+            ("p", "These are general, well-known causes; we will confirm the Jordanian picture in interviews with blood banks."),
+        ]),
+        ("The solution: 3 layers, 8 modules", [
+            ("table", ["Module", "What it does", "How (tech)"], [
+                ["Smart inventory", "Every unit tracked with type, expiry and location", "RFID/barcode per unit + fridge sensors → live database"],
+                ["Demand forecasting", "Predicts 14-day demand per type per hospital", "Time-series models (Prophet / LightGBM) on history, weekdays, seasons"],
+                ["Smart balancing", "Moves units close to expiry to a hospital that will use them", "Optimization: minimize expected waste + shortage"],
+                ["Matching engine", "Finds a compatible type and the nearest source", "Blood compatibility rules + ranking by stock, distance and ETA"],
+                ["Fleet management", "Plans safe drone routes; a licensed pilot approves", "Route planning with restricted zones and weather; MAVLink"],
+                ["Cold chain", "Box temperature every second, instant alarm, full log", "IoT temperature loggers over 4G/5G"],
+                ["Donor engine", "Invites eligible, nearby donors for the missing type", "Eligibility (90+ days), distance ≤ 12 km, response-likelihood model"],
+                ["National dashboard", "Live national view for the Ministry of Health", "Aggregated, anonymized data"]]),
+            ("call", "Key message: DAMI is not just a drone. The drone is only the emergency layer of a full blood-management system."),
+        ]),
+        ("Emergency request, step by step", [
+            ("table", ["Time", "Step"], [["0 s", "Hospital requests 6 units O− in the app"], ["5 s", "AI checks live stock and compatibility"], ["10 s", "Best source chosen: drone or car (ETA comparison)"],
+                      ["1 min", "Licensed pilot approves; box packed at 2–6°C"], ["≈ 9 min", "Flight with live GPS and temperature"], ["✓", "Delivery confirmed; donors called to restock"]]),
+            ("p", "These times come from our simulation for a typical distance in Amman. Say “in our simulation”."),
+        ]),
+        ("The drone and safety", [
+            ("ul", ["Multirotor drone for the pilot (payload 2–4 kg ≈ 4–6 units), fixed-wing VTOL later for longer distances.",
+                    "Cooling box with phase-change material keeps 2–6°C; logger reports every second; any out-of-range shipment is flagged and not used.",
+                    "Safety: emergency parachute, automatic return on link loss, geofencing, routes away from crowds, liability insurance.",
+                    "Regulation: permits from the Civil Aviation Regulatory Commission (CARC) and security authorities. We start in simulation, then one approved pilot route.",
+                    "If flying is impossible (weather, fault), the system switches automatically to road transport from the nearest source."]),
+        ]),
+        ("Matching engine: the compatibility rules", [
+            ("ul", ["O− can give red cells to every type (universal donor).", "AB+ can receive from every type (universal recipient).",
+                    "Rh−negative patients receive only Rh−negative blood; Rh−positive patients can receive both.",
+                    "If the requested type runs out, the engine proposes the safest compatible alternative, and the final medical decision stays with the hospital."]),
+        ]),
+        ("Business Model Canvas, block by block", [
+            ("table", ["Block", "Our answer", "Why"], [
+                ["Customer segments", "Private hospitals first (71 of 121), then MoH hospitals, National Blood Bank; donors use it free", "Private hospitals decide faster and pay for quality"],
+                ["Value propositions", "Emergency blood in minutes; less waste; live national view; right donor at the right time", "Saves lives and money"],
+                ["Channels", "Direct sales to hospitals, Ministry partnership, mobile app + web dashboard", "B2B health sales are relationship-based"],
+                ["Customer relationships", "Annual service contract, 24/7 emergency center, monthly impact reports", "Critical service needs trust"],
+                ["Revenue streams", "Subscription JOD 6,000/yr; flight JOD 90; national contract JOD 40,000/yr; sponsorship JOD 10,000/yr", "Recurring base + usage + government + CSR"],
+                ["Key activities", "Forecasting & matching models, drone operations, cold-chain monitoring, donor call-ups", "Core of the service"],
+                ["Key resources", "AI platform, RFID per unit, drones & smart boxes, IoT sensors, team & licensed pilots", "Hard to copy together"],
+                ["Key partners", "MoH & National Blood Bank, hospitals, drone makers, CARC, Red Crescent & sponsors", "Access, permits and credibility"],
+                ["Cost structure", f"Initial JOD 58,000; operating JOD 50K → 95K → 150K; ≈ JOD 40 direct per flight", "Team is 60% of operating costs"]]),
+        ]),
+        ("The numbers — and how to defend each one", [
+            ("call", "Judges said our first version was missing budget, costs and revenue detail. The new deck adds 6 slides: Market size, Competition, Revenue, Costs, Budget, Financial summary."),
+            ("table", ["Item", "Year 1", "Year 2", "Year 3", "How we got it"], [
+                ["Hospitals subscribed", "3", "10", "20", "Assumption: realistic sales pace for a new health startup"],
+                ["Subscription revenue", "18,000", "60,000", "120,000", "hospitals × JOD 6,000"],
+                ["Drone flights", "0", "400", "1,500", "Flights start in year 2 after permits"],
+                ["Flight revenue", "0", "36,000", "135,000", "flights × JOD 90"],
+                ["National dashboard", "0", "0", "40,000", "One government contract in year 3"],
+                ["Sponsorship", "10,000", "20,000", "30,000", "1 → 2 → 3 sponsors × JOD 10,000"],
+                ["Total revenue", R[0], R[1], R[2], "Sum of the 4 streams"],
+                ["Operating result", EB[0], EB[1], EB[2], "Gross profit − operating costs"]]),
+            ("ul", [f"Budget ask JOD {FUND} = initial investment JOD 58,000 (hardware 30,000 · software 23,000 · compliance 5,000) + JOD {BUDGET[3]:,} to cover operating losses until month 24.",
+                    "Monthly cash flow turns positive from month 25.",
+                    f"Break-even (all investment recovered): around month {BE_BASE} in the base case, month {OPT['breakeven']} in the optimistic case (+40% volume).",
+                    "Gross margin in year 3 ≈ 72%. Each drone flight: price JOD 90, direct cost ≈ JOD 40 (battery wear, maintenance, pilot time, insurance) → ≈ 55% contribution margin.",
+                    "Market: Jordan has 121 hospitals (71 private, 33 MoH, 15 Royal Medical Services, 2 university — source: trade.gov Jordan Country Commercial Guide). TAM = 121 × 6,000 = JOD 726K/yr; SAM = 71 × 6,000 = JOD 426K/yr; SOM = 20 × 6,000 = JOD 120K/yr by year 3.",
+                    "Why JOD 6,000? That is JOD 500 a month per hospital. We will validate it in 10–15 interviews with hospital and blood-bank managers."]),
+            ("call", "Always say: “These are planning assumptions; our next step is validating them with hospitals and suppliers.” Honesty about assumptions scores better than fake certainty."),
+        ]),
+        ("Who presents what (suggestion)", [("speakers", None)]),
+        ("Live demo (2 minutes)", [
+            ("ol", ["Open the DAMI app before entering (works offline).", "Dashboard: point at the red alerts (critical shortages) and expiring units.",
+                    "Emergency drone → Find best source → show drone vs car time.", "Launch drone now → watch it fly; point at box temperature ≈ 4°C.",
+                    "Press Simulate cooling failure → the alarm appears and backup cooling activates.", "Mass casualty → Run incident scenario → three hospitals served automatically."]),
+        ]),
+        ("Judge questions (with answers)", [("qa", [
+            ("Are drones allowed in Jordan?", "They need CARC and security approvals. We start with software and simulation, then one approved pilot route; year-1 revenue doesn't depend on flying."),
+            ("How do you keep the blood safe?", "Certified 2–6°C box, temperature every second, instant alarm, full log with each shipment; out-of-range units are flagged and not used."),
+            ("What if a drone crashes?", "Parachute, auto-return, geofencing, routes away from crowds, insurance, licensed pilot on every flight."),
+            ("Where does the data come from?", "The prototype uses realistic synthetic data. In the pilot we connect partner hospitals under a formal agreement with encryption and consent."),
+            ("Why JOD 6,000 per hospital?", "It's JOD 500 a month for less waste and faster emergency supply. We'll validate the price in 10–15 interviews."),
+            ("Why do you need JOD 89,900?", f"JOD 58,000 initial investment plus JOD {BUDGET[3]:,} to run until we're cash-positive in month 25."),
+            ("When do you break even?", f"Around month {BE_BASE} in the base case, month {OPT['breakeven']} in the optimistic case. Year 3 is already profitable."),
+            ("How big is the market?", "121 hospitals in Jordan → JOD 726K a year in subscriptions alone; we target 20 hospitals by year 3, plus flights and a national contract; later the region."),
+            ("Who are your competitors?", "Manual coordination today; blood-bank software that records stock only; Zipline delivers but isn't in Jordan and doesn't manage stock."),
+            ("What if the Ministry doesn't sign?", "Private hospitals are our first customers; the national contract is only year-3 upside."),
+            ("What's the biggest risk?", "Drone licensing. That's why the software creates value first and drones come in year 2."),
+            ("How is AI used, really?", "Forecasting demand per type, optimizing stock moves, ranking sources, and predicting which donors will respond."),
+            ("What have you built?", "A working simulator: dashboard, forecasting, donors, emergency drone with temperature tracking, mass-casualty mode."),
+            ("How many units per flight?", "4–6 units in the pilot drone — enough for the first emergency need until the larger batch arrives by road."),
+            ("How do you measure success?", "Units saved from expiry, minutes saved, % shipments in safe temperature, active donors."),
+            ("Why you?", "A software engineer plus four AI engineers: we can build the platform and the models ourselves.")])]),
+        ("Say carefully / never claim", [
+            ("ul", ["Never invent statistics. Use only the sourced numbers in this guide.",
+                    "Say “per our preliminary research” when you say there is no similar system in Jordan.",
+                    "Say “in our simulation” for the 9-minute vs 34-minute times.",
+                    "Say “planning assumptions” for all financial figures.",
+                    "Medical decisions always stay with the hospital's medical staff."]),
+        ]),
+        ("Final checklist", [("check", ["Everyone knows their slides and timing", "Demo rehearsed 3 times", "Laptop charged, app open, PDF backup on USB",
+                                         "Each member can answer at least 3 judge questions", "Sources ready: Kauvar 2006, Nisingizwe 2022, trade.gov"])]),
+    ]),
+"ar": dict(
+    title="دليل الفريق", sub="ماذا نشرح، وكيف نشرحه، وكيف ندافع عن كل رقم أمام لجنة التحكيم",
+    sections=[
+        ("المشروع في دقيقة", [
+            ("p", "دَمي منصة ذكاء اصطناعي وخدمة درونز طبية تضمن وصول وحدة الدم المناسبة إلى المستشفى المناسب قبل أن يحتاجها. تتنبأ بالطلب على كل زمرة في كل مستشفى، وتوازن المخزون قبل انتهاء الصلاحية، وتستدعي المتبرعين المناسبين، وفي الطوارئ تطلق درون مبرّدة تنقل الدم من بنك الدم إلى المستشفى خلال دقائق."),
+            ("call", "الجملة التي يحفظها الجميع: «النزيف سبب 30–40% من وفيات الإصابات. دَمي تستخدم الذكاء الاصطناعي لتتنبأ وتوازن مخزون الدم، وتستدعي المتبرع المناسب، وتنقل الدم بدرون مبرّدة خلال دقائق بدل نصف ساعة.»"),
+        ]),
+        ("المشكلة (بأرقام موثّقة)", [
+            ("ul", ["النزيف سبب 30–40% من وفيات الإصابات، و33–56% من هذه الوفيات تحدث قبل وصول المريض للمستشفى (Kauvar وزملاؤه، Journal of Trauma، 2006).",
+                    "معظم وفيات الإصابات تحدث في الساعات الأولى، لذلك وقت وصول الدم مهم جدًا.",
+                    "الدم له صلاحية: الصفائح 5–7 أيام فقط، والكريات الحمراء 35–42 يومًا عند 2–6°م. مستشفى ينقصه الدم وآخر تنتهي صلاحية وحداته.",
+                    "زمرة O سالب تُستخدم أولًا في النزيف قبل معرفة زمرة المريض، وهي قليلة.",
+                    "التنسيق اليوم غالبًا بالهاتف، وحملات التبرع العامة لا تستهدف الزمرة الناقصة."]),
+            ("call", "لا نقول أبدًا «3 من كل 10 يموتون بسبب نقص الدم» لأنه لا يوجد مصدر لهذا الرقم. نستخدم رقم 30–40% ونذكر مصدره."),
+        ]),
+        ("لماذا ينقص الدم؟", [
+            ("table", ["السبب", "معناه"], [["تبرع موسمي", "ينخفض التبرع في الصيف ورمضان والامتحانات"], ["صلاحية قصيرة", "الصفائح 5–7 أيام والكريات 35–42 يومًا"],
+                      ["زمر نادرة", "O− مطلوبة دائمًا ومتوفرة قليلًا"], ["توزيع غير متوازن", "المخزون في المركز والأطراف تنتظر"],
+                      ["طوارئ مفاجئة", "حادث كبير واحد قد يستهلك مخزون أيام"], ["تنسيق يدوي", "اتصالات هاتفية بلا رؤية وطنية لحظية"]]),
+            ("p", "هذه أسباب عامة معروفة، وسنتأكد من الصورة في الأردن عبر مقابلات مع بنوك الدم."),
+        ]),
+        ("الحل: 3 طبقات و8 وحدات", [
+            ("table", ["الوحدة", "ماذا تفعل", "كيف (التقنية)"], [
+                ["المخزون الذكي", "تتبع كل وحدة: الزمرة والصلاحية والموقع", "رمز RFID/باركود لكل وحدة + حساسات الثلاجات ← قاعدة بيانات لحظية"],
+                ["التنبؤ بالطلب", "يتوقع طلب 14 يومًا لكل زمرة ومستشفى", "نماذج سلاسل زمنية (Prophet / LightGBM) على التاريخ وأيام الأسبوع والمواسم"],
+                ["الموازنة الذكية", "ينقل الوحدات القريبة من الانتهاء لمستشفى سيستخدمها", "تحسين رياضي لتقليل الهدر والنقص معًا"],
+                ["محرك التطابق", "يجد زمرة متوافقة وأقرب مصدر", "قواعد توافق الدم + ترتيب حسب المخزون والمسافة والزمن"],
+                ["إدارة الأسطول", "يخطط مسارًا آمنًا ويوافق عليه طيار مرخّص", "تخطيط مسار مع المناطق المحظورة والطقس؛ بروتوكول MAVLink"],
+                ["سلسلة التبريد", "حرارة الصندوق كل ثانية وإنذار وسجل كامل", "مسجّلات حرارة IoT عبر شبكة 4G/5G"],
+                ["محرك المتبرعين", "يدعو المتبرعين المؤهلين القريبين للزمرة الناقصة", "الأهلية (90 يومًا+) والمسافة ≤ 12 كم ونموذج احتمال الاستجابة"],
+                ["اللوحة الوطنية", "رؤية لحظية لوزارة الصحة", "بيانات مجمّعة ومجهّلة الهوية"]]),
+            ("call", "الرسالة الأساسية: دَمي ليست مجرد درون. الدرون هي طبقة الطوارئ فقط في نظام كامل لإدارة الدم."),
+        ]),
+        ("الطلب الطارئ خطوة بخطوة", [
+            ("table", ["الوقت", "الخطوة"], [["0 ث", "المستشفى يطلب 6 وحدات O− من التطبيق"], ["5 ث", "الذكاء الاصطناعي يفحص المخزون والتوافق"], ["10 ث", "اختيار أفضل مصدر: درون أم سيارة (مقارنة الزمن)"],
+                      ["1 د", "موافقة الطيار المرخّص وتعبئة الصندوق على 2–6°م"], ["≈ 9 د", "طيران مع تتبع GPS والحرارة لحظيًا"], ["✓", "تأكيد التسليم واستدعاء متبرعين للتعويض"]]),
+            ("p", "هذه الأزمنة من المحاكاة لمسافة نموذجية داخل عمّان. نقول دائمًا «في المحاكاة»."),
+        ]),
+        ("الدرون والسلامة", [
+            ("ul", ["درون متعددة المراوح للتجربة (حمولة 2–4 كغ ≈ 4–6 وحدات)، ثم درون VTOL ثابتة الجناح للمسافات الأطول.",
+                    "صندوق تبريد بمادة متغيرة الطور يحافظ على 2–6°م، ومسجّل حرارة كل ثانية، وأي شحنة تخرج عن النطاق تُعلَّم ولا تُستخدم.",
+                    "السلامة: مظلة طوارئ، وعودة تلقائية عند فقدان الاتصال، وسياج جغرافي، ومسارات بعيدة عن التجمعات، وتأمين مسؤولية.",
+                    "التنظيم: تصاريح هيئة تنظيم الطيران المدني والجهات الأمنية. نبدأ بالمحاكاة ثم مسار تجريبي واحد معتمد.",
+                    "إذا تعذّر الطيران (طقس أو عطل) يتحول النظام تلقائيًا للنقل البري من أقرب مصدر."]),
+        ]),
+        ("محرك التطابق: قواعد التوافق", [
+            ("ul", ["O− تعطي الكريات الحمراء لكل الزمر (المعطي العام).", "AB+ تستقبل من كل الزمر (المستقبل العام).",
+                    "المريض سالب العامل الريزيسي يستقبل دمًا سالبًا فقط، والموجب يستقبل الاثنين.",
+                    "إذا نفدت الزمرة المطلوبة يقترح المحرك البديل المتوافق الأكثر أمانًا، والقرار الطبي النهائي للمستشفى."]),
+        ]),
+        ("نموذج العمل خانة بخانة", [
+            ("table", ["الخانة", "إجابتنا", "لماذا"], [
+                ["شرائح العملاء", "المستشفيات الخاصة أولًا (71 من 121)، ثم مستشفيات الوزارة وبنك الدم الوطني؛ المتبرعون مجانًا", "المستشفيات الخاصة تقرر أسرع وتدفع للجودة"],
+                ["القيمة المقدّمة", "دم طارئ خلال دقائق، وهدر أقل، ورؤية وطنية لحظية، ومتبرع في الوقت المناسب", "تنقذ أرواحًا وتوفر مالًا"],
+                ["القنوات", "بيع مباشر للمستشفيات، وشراكة مع الوزارة، وتطبيق جوال ولوحة ويب", "البيع في القطاع الصحي قائم على العلاقات"],
+                ["العلاقة مع العملاء", "عقد خدمة سنوي، ومركز طوارئ 24/7، وتقارير أثر شهرية", "الخدمة الحرجة تحتاج ثقة"],
+                ["مصادر الإيرادات", "اشتراك 6,000 د.أ/سنة؛ رحلة 90 د.أ؛ عقد وطني 40,000 د.أ/سنة؛ رعاية 10,000 د.أ/سنة", "قاعدة متكررة + استخدام + حكومة + مسؤولية مجتمعية"],
+                ["الأنشطة الرئيسية", "نماذج التنبؤ والتطابق، وتشغيل الدرونز، ومراقبة التبريد، واستدعاء المتبرعين", "جوهر الخدمة"],
+                ["الموارد الرئيسية", "منصة AI، وRFID لكل وحدة، ودرونز وصناديق ذكية، وحساسات IoT، وفريق وطيارون مرخّصون", "صعب نسخها مجتمعة"],
+                ["الشركاء الرئيسيون", "الوزارة وبنك الدم الوطني، والمستشفيات، ومصنعو الدرونز، وهيئة الطيران، والهلال الأحمر والرعاة", "الوصول والتصاريح والمصداقية"],
+                ["هيكل التكاليف", "استثمار أولي 58,000 د.أ؛ تشغيل 50 ← 95 ← 150 ألف د.أ؛ ≈ 40 د.أ مباشرة لكل رحلة", "الفريق 60% من التكاليف التشغيلية"]]),
+        ]),
+        ("الأرقام وكيف ندافع عن كل رقم", [
+            ("call", "اللجنة قالت إن نسختنا الأولى ينقصها الميزانية والتكاليف وتفاصيل الإيرادات. العرض الجديد فيه 6 شرائح إضافية: حجم السوق، والمنافسة، والإيرادات، والتكاليف، والميزانية، والملخص المالي."),
+            ("table", ["البند", "السنة 1", "السنة 2", "السنة 3", "كيف حسبناه"], [
+                ["مستشفيات مشتركة", "3", "10", "20", "افتراض: وتيرة بيع واقعية لشركة صحية ناشئة"],
+                ["إيراد الاشتراكات", "18,000", "60,000", "120,000", "عدد المستشفيات × 6,000 د.أ"],
+                ["رحلات الدرون", "0", "400", "1,500", "الرحلات تبدأ في السنة 2 بعد التصاريح"],
+                ["إيراد الرحلات", "0", "36,000", "135,000", "عدد الرحلات × 90 د.أ"],
+                ["اللوحة الوطنية", "0", "0", "40,000", "عقد حكومي واحد في السنة 3"],
+                ["الرعاية", "10,000", "20,000", "30,000", "1 ← 2 ← 3 رعاة × 10,000 د.أ"],
+                ["مجموع الإيرادات", R[0], R[1], R[2], "مجموع المصادر الأربعة"],
+                ["النتيجة التشغيلية", EB[0], EB[1], EB[2], "الربح الإجمالي − التكاليف التشغيلية"]]),
+            ("ul", [f"الطلب {FUND} د.أ = استثمار أولي 58,000 د.أ (أجهزة 30,000 · برمجيات 23,000 · امتثال 5,000) + {BUDGET[3]:,} د.أ لتغطية الخسائر التشغيلية حتى الشهر 24.",
+                    "التدفق النقدي الشهري يصبح موجبًا من الشهر 25.",
+                    f"نقطة التعادل (استرداد كل الاستثمار): قرابة الشهر {BE_BASE} في السيناريو الأساسي، والشهر {OPT['breakeven']} في المتفائل (+40% حجم).",
+                    "الهامش الإجمالي في السنة 3 ≈ 72%. كل رحلة: السعر 90 د.أ، والكلفة المباشرة ≈ 40 د.أ (استهلاك البطارية والصيانة ووقت الطيار والتأمين) ← هامش مساهمة ≈ 55%.",
+                    "السوق: في الأردن 121 مستشفى (71 خاص، 33 وزارة الصحة، 15 الخدمات الطبية الملكية، 2 جامعي — المصدر: trade.gov). TAM = 121 × 6,000 = 726 ألف د.أ سنويًا؛ SAM = 71 × 6,000 = 426 ألفًا؛ SOM = 20 × 6,000 = 120 ألفًا بحلول السنة 3.",
+                    "لماذا 6,000 د.أ؟ لأنها 500 د.أ شهريًا لكل مستشفى، وسنختبرها في 10–15 مقابلة مع مدراء المستشفيات وبنوك الدم."]),
+            ("call", "نقول دائمًا: «هذه افتراضات تخطيطية، وخطوتنا التالية التحقق منها مع المستشفيات والموردين». الصراحة في الافتراضات أفضل من ثقة مزيفة."),
+        ]),
+        ("من يعرض ماذا (اقتراح)", [("speakers", None)]),
+        ("العرض الحي (دقيقتان)", [
+            ("ol", ["افتحوا تطبيق دَمي قبل الدخول (يعمل بدون إنترنت).", "لوحة القيادة: أشيروا للتنبيهات الحمراء والوحدات القريبة من الانتهاء.",
+                    "طلب طارئ ← «اقترح أفضل مصدر» ← اعرضوا مقارنة الدرون والسيارة.", "«إطلاق الدرون» ← تابعوا الطيران وحرارة الصندوق ≈ 4°م.",
+                    "«محاكاة عطل تبريد» ← يظهر الإنذار ويتفعّل التبريد الاحتياطي.", "«حادث كبير» ← ثلاث مستشفيات تُخدم تلقائيًا."]),
+        ]),
+        ("أسئلة اللجنة وإجاباتها", [("qa", [
+            ("هل الدرونز مسموحة في الأردن؟", "تحتاج موافقة هيئة تنظيم الطيران المدني والجهات الأمنية. نبدأ بالبرمجيات والمحاكاة ثم مسار تجريبي معتمد، وإيرادات السنة الأولى لا تعتمد على الطيران."),
+            ("كيف تحافظون على سلامة الدم؟", "صندوق معتمد 2–6°م، وحرارة كل ثانية، وإنذار فوري، وسجل كامل مع كل شحنة، وأي وحدة خارج النطاق لا تُستخدم."),
+            ("ماذا لو سقطت الدرون؟", "مظلة، وعودة تلقائية، وسياج جغرافي، ومسارات بعيدة عن التجمعات، وتأمين، وطيار مرخّص في كل رحلة."),
+            ("من أين البيانات؟", "النموذج الأولي يستخدم بيانات اصطناعية واقعية، وفي التجربة نربط المستشفيات الشريكة باتفاقية رسمية وتشفير وموافقات."),
+            ("لماذا 6,000 دينار للمستشفى؟", "500 دينار شهريًا مقابل هدر أقل وإمداد طارئ أسرع، وسنختبر السعر في 10–15 مقابلة."),
+            ("لماذا تحتاجون 89,900 دينار؟", f"58,000 استثمار أولي و{BUDGET[3]:,} للتشغيل حتى يصبح التدفق النقدي موجبًا في الشهر 25."),
+            ("متى تصلون لنقطة التعادل؟", f"قرابة الشهر {BE_BASE} في الأساسي والشهر {OPT['breakeven']} في المتفائل، والسنة الثالثة رابحة."),
+            ("كم حجم السوق؟", "121 مستشفى في الأردن ← 726 ألف دينار سنويًا من الاشتراكات فقط؛ نستهدف 20 مستشفى بحلول السنة 3 إضافة للرحلات والعقد الوطني، ثم المنطقة."),
+            ("من منافسوكم؟", "التنسيق اليدوي اليوم، وبرامج بنوك الدم التي تسجل المخزون فقط، وZipline التي توصل لكنها غير موجودة في الأردن ولا تدير المخزون."),
+            ("ماذا لو لم توقّع الوزارة؟", "عملاؤنا الأوائل المستشفيات الخاصة، والعقد الوطني إضافة في السنة الثالثة فقط."),
+            ("ما أكبر خطر؟", "تراخيص الدرونز، لذلك البرمجيات تولّد القيمة أولًا والدرونز تبدأ في السنة الثانية."),
+            ("كيف تستخدمون الذكاء الاصطناعي فعلًا؟", "التنبؤ بالطلب لكل زمرة، وتحسين نقل المخزون، وترتيب المصادر، وتوقع المتبرعين الأكثر استجابة."),
+            ("ماذا بنيتم فعلًا؟", "محاكي يعمل: لوحة قيادة، وتنبؤ، ومتبرعون، وطلب درون طارئ مع تتبع الحرارة، ووضع الحوادث الكبرى."),
+            ("كم وحدة في الرحلة؟", "4–6 وحدات في درون التجربة، تكفي الحاجة الطارئة الأولى حتى تصل الدفعة الأكبر بالسيارة."),
+            ("كيف تقيسون النجاح؟", "الوحدات المنقذة من انتهاء الصلاحية، والدقائق الموفّرة، ونسبة الشحنات في حرارة آمنة، وعدد المتبرعين النشطين."),
+            ("لماذا أنتم؟", "مهندس برمجيات وأربعة متخصصين في الذكاء الاصطناعي: نستطيع بناء المنصة والنماذج بأنفسنا.")])]),
+        ("نقولها بحذر / لا ندّعيها أبدًا", [
+            ("ul", ["لا نخترع أي إحصائية؛ نستخدم فقط الأرقام الموثّقة في هذا الدليل.", "نقول «حسب بحثنا المبدئي» عندما نقول إنه لا يوجد نظام مشابه في الأردن.",
+                    "نقول «في المحاكاة» لأزمنة 9 دقائق مقابل 34 دقيقة.", "نقول «افتراضات تخطيطية» لكل الأرقام المالية.", "القرار الطبي دائمًا للكادر الطبي في المستشفى."]),
+        ]),
+        ("قائمة التحقق النهائية", [("check", ["كل عضو يعرف شرائحه ووقته", "تدربنا على العرض الحي 3 مرات", "اللابتوب مشحون والتطبيق مفتوح ونسخة PDF على فلاشة",
+                                              "كل عضو يجيب على 3 أسئلة على الأقل", "المصادر جاهزة: Kauvar 2006 و Nisingizwe 2022 و trade.gov"])]),
+    ]),
+}
+
+SOURCES = ["Kauvar DS, Lefering R, Wade CE. Impact of hemorrhage on trauma outcome. J Trauma 2006;60(6 Suppl):S3–S11. pubmed.ncbi.nlm.nih.gov/16763478",
+           "Nisingizwe MP et al. Effect of unmanned aerial vehicle (drone) delivery on blood product delivery time and wastage in Rwanda. Lancet Glob Health 2022;10:e564–e569.",
+           "U.S. International Trade Administration. Jordan Country Commercial Guide — Healthcare. trade.gov/country-commercial-guides/jordan-healthcare"]

@@ -17,6 +17,7 @@ from pptx.util import Emu  # noqa: E402
 
 import art  # noqa: E402
 import extra  # noqa: E402
+import fin  # noqa: E402
 from common import OUT, font_css  # noqa: E402
 
 DEST = OUT / "SUBMISSION"
@@ -61,9 +62,9 @@ TXT = {
         vp=("القيمة المقدّمة", "Value Propositions", ["دم طارئ خلال دقائق لا نصف ساعة", "هدر أقل بموازنة المخزون", "رؤية وطنية لحظية للدم", "متبرع في الوقت المناسب"]),
         cr=("العلاقة مع العملاء", "Customer Relationships", ["عقد خدمة سنوي", "مركز طوارئ 24/7", "تقارير أثر شهرية"]),
         ch=("القنوات", "Channels", ["بيع مباشر للمستشفيات", "شراكة مع وزارة الصحة", "تطبيق جوال ولوحة ويب"]),
-        cs=("شرائح العملاء", "Customer Segments", ["المستشفيات الخاصة (البداية)", "مستشفيات وزارة الصحة", "بنك الدم الوطني", "المتبرعون (مجانًا)"]),
-        cost=("هيكل التكاليف", "Cost Structure", ["تطوير البرمجيات والذكاء الاصطناعي", "الدرونز والصيانة والتأمين", "التصاريح والامتثال", "رواتب الفريق والخوادم"]),
-        rev=("مصادر الإيرادات", "Revenue Streams", ["اشتراك المستشفى: 6,000 د.أ/سنة", "رحلة درون طارئة: 90 د.أ", "عقد اللوحة الوطنية: 40,000 د.أ/سنة", "رعاية تطبيق المتبرعين: 10,000 د.أ/سنة"]),
+        cs=("شرائح العملاء", "Customer Segments", ["المستشفيات الخاصة: 71 من أصل 121 (البداية)", "مستشفيات وزارة الصحة", "بنك الدم الوطني", "المتبرعون (مجانًا)"]),
+        cost=("هيكل التكاليف", "Cost Structure", ["استثمار أولي 58,000 د.أ: أجهزة 30 ألفًا · برمجيات 23 ألفًا · امتثال 5 آلاف", "تكاليف تشغيل سنوية: 50 ← 95 ← 150 ألف د.أ", "الرواتب = 60% من التكاليف التشغيلية", "كلفة مباشرة لكل رحلة درون ≈ 40 د.أ"]),
+        rev=("مصادر الإيرادات", "Revenue Streams", ["اشتراك المستشفى: 6,000 د.أ/سنة", "رحلة درون طارئة: 90 د.أ", "عقد اللوحة الوطنية: 40,000 د.أ/سنة", "رعاية تطبيق المتبرعين: 10,000 د.أ/سنة", "المجموع: 28 ← 116 ← 325 ألف د.أ خلال 3 سنوات"]),
     ),
     foot="الأرقام المالية افتراضات تخطيطية أولية للتحقق.",
 ),
@@ -105,9 +106,9 @@ TXT = {
         vp=("Value Propositions", "", ["Emergency blood in minutes, not half an hour", "Less waste through stock balancing", "Live national view of blood", "The right donor at the right time"]),
         cr=("Customer Relationships", "", ["Annual service contract", "24/7 emergency center", "Monthly impact reports"]),
         ch=("Channels", "", ["Direct sales to hospitals", "Ministry of Health partnership", "Mobile app & web dashboard"]),
-        cs=("Customer Segments", "", ["Private hospitals (beachhead)", "Ministry of Health hospitals", "National Blood Bank", "Donors (free)"]),
-        cost=("Cost Structure", "", ["Software & AI development", "Drones, maintenance & insurance", "Permits & compliance", "Team salaries & servers"]),
-        rev=("Revenue Streams", "", ["Hospital subscription: JOD 6,000/yr", "Emergency drone flight: JOD 90", "National dashboard: JOD 40,000/yr", "Donor-app sponsorship: JOD 10,000/yr"]),
+        cs=("Customer Segments", "", ["Private hospitals: 71 of Jordan's 121 (beachhead)", "Ministry of Health hospitals", "National Blood Bank", "Donors (free)"]),
+        cost=("Cost Structure", "", ["Initial investment JOD 58,000: hardware 30K · software 23K · compliance 5K", "Yearly operating costs: JOD 50K → 95K → 150K", "Team salaries = 60% of operating costs", "Direct cost per drone flight ≈ JOD 40"]),
+        rev=("Revenue Streams", "", ["Hospital subscription: JOD 6,000/yr", "Emergency drone flight: JOD 90", "National dashboard: JOD 40,000/yr", "Donor-app sponsorship: JOD 10,000/yr", "Total: JOD 28K → 116K → 325K over 3 years"]),
     ),
     foot="Financial figures are preliminary planning assumptions to be validated.",
 ),
@@ -205,11 +206,13 @@ def deck(lang):
 <div class="card" style="width:560px"><div class="big" style="font-size:150px;padding:25px 0">{T['s8c']}</div><span style="font-size:36px">{T['s8d']}</span></div></div>
 <div class="abs l" style="left:0;right:0;top:830px;text-align:center">🇯🇴 {T['s8e']}</div>
 <div class="src" style="{start}:120px">{T['s8src']}</div>""")
+    fin.slides(s, lang, rtl, start, end, 1)
     # 9 who pays
     s(f"""<div class="abs h dk" style="left:0;right:0;top:100px;text-align:center">{T['s9t']}</div>
 <div class="abs" style="left:130px;right:130px;top:300px;display:grid;grid-template-columns:repeat(4,1fr);gap:36px">
 {''.join(f'<div class="card"><div style="font-size:100px">{i}</div><b class="dk" style="direction:ltr;unicode-bidi:isolate">{a}</b><span>{b}</span></div>' for i, a, b in T['s9'])}</div>
 <div class="abs" style="left:0;right:0;top:880px;text-align:center"><span style="background:#B91C1C;color:#fff;border-radius:99px;padding:18px 50px;font-size:44px;font-weight:900">{T['s9k']}</span></div>""", "light")
+    fin.slides(s, lang, rtl, start, end, 2)
     # 10 plan
     xs = [1640, 1173, 707, 240] if rtl else [240, 707, 1173, 1640]
     nodes = "".join(f'<div class="abs dot" style="left:{x - 28}px;top:532px"></div><div class="abs" style="left:{x - 220}px;width:440px;top:{300 if i % 2 == 0 else 640}px;text-align:center"><div style="font-size:44px;font-weight:900;color:#F87171">{a}</div><div class="l">{b}</div></div>' for i, ((a, b), x) in enumerate(zip(T['s10'], xs)))
